@@ -1,0 +1,44 @@
+name: CustomWorldPlugin
+version: 0.1
+main: com.thomas.customworld.CustomWorldPluginJava
+description: CustomWorld's main plugin.
+authors: [Thomas Marlowe]
+website: http://example.com
+depend: []
+softdepend: []
+loadbefore: []
+permissions:
+  spawnbuild:
+    description: Enables building where usually prohibited
+  noban:
+    description: Makes a player unbannable
+  setrank:
+    description: Enables setting a player's rank
+  blocks:
+    description: Enables placing blocked blocks and entities
+  creativepvp:
+    description: Quite useless... you can hit people in creative now
+  hell:
+    description: Bans, kicks, etc a specific player
+
+commands:
+  rank:
+    description: Checks your CustomWorld rank.
+    aliases: []
+    usage: /rank [player] [newrank]
+  home:
+    description: Gets and tps to homes
+    aliases: []
+    usage: /home [homename]
+  sethome:
+    description: Sets a home
+    aliases: []
+    usage: /sethome [homename]
+  delhome:
+    description: Deletes a home
+    aliases: []
+    usage: /delhome [homename]
+  lobby:
+    description: Leaves the current game
+    aliases: []
+    usage: /lobby
