@@ -5,6 +5,7 @@ import org.bukkit.{Color, Material, OfflinePlayer}
 import org.bukkit.configuration.{Configuration, ConfigurationOptions, ConfigurationSection}
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 
 import scala.collection.JavaConverters
 
@@ -21,15 +22,25 @@ package object configuration {
       "lang.prefix" -> "§aCustomWorld §l>>",
       "lang.homes" -> "Available homes:",
       "lang.tpto" -> "Teleporting to",
+      "lang.spleefwon" -> "won a round of spleef!",
       "lang.rankis" -> "Rank:",
+      "lang.leavegame" -> "Leave the game first with /spawn",
+
+      "minigame.world" -> "world",
+      "minigame.spleef.template" -> "./spleef.schematic",
+      "minigame.spleef.minRegion" -> new Vector(-155, -2, -92),
+      "minigame.spleef.maxRegion" -> new Vector(-184, 15, -56),
+      "minigame.spleef.spawnPos" -> new Vector (-170, 10, -73),
+      "minigame.spleef.signPos" -> new Vector(-169, 5, -56),
+      "minigame.cage" -> "./cage.schematic",
 
       "explosions" -> false,
 
       "db.hostname" -> "localhost",
-      "db.port" -> 5432,
+      "db.port" -> 3306,
       "db.database" -> "customworld",
-      "db.username" -> "postgres",
-      "db.password" -> "postgres"
+      "db.username" -> "root",
+      "db.password" -> "mysql"
     ) mapValues (_.asInstanceOf[AnyRef])
     JavaConverters.mapAsJavaMap (map)
   }

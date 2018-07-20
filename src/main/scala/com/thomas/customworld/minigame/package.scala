@@ -1,33 +1,53 @@
 package com.thomas.customworld
 
+import java.io.File
+import java.util.UUID
+
+import com.boydti.fawe.`object`.schematic.Schematic
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.thomas.customworld.util.Box
-import org.bukkit.Location
+import org.bukkit.{ChatColor, Location}
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.Event
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerMoveEvent}
 import org.bukkit.plugin.Plugin
+import com.thomas.customworld.util.WEVec
+import org.bukkit.util.Vector
+
+import scala.collection.mutable.ArrayBuffer
 
 package object minigame {
-  trait GameState {var players:Array[Player] = Array()}
-  case class WaitingForPlayers () extends GameState
-  case class Countdown (timeLeft:Int) extends GameState
-  case class Playing (timeLeft:Int) extends GameState
+  trait GameState
+  case class WaitingForPlayers () extends GameState {override def toString = s"${ChatColor.GRAY}Waiting for players..."}
+  case class Countdown (timeLeft:Int) extends GameState {override def toString = s"${ChatColor.YELLOW}$timeLeft until start!"}
+  case class Playing (timeLeft:Int) extends GameState {override def toString = s"${ChatColor.GREEN}$timeLeft until game end!"}
 
   //TODO: MINIGAME WORLD IN CONFIG
-  var Spleef:Minigame = null
+  var Spleef:Minigame = _
+  var CageSchematic:Schematic = _
 
   def InitializeMinigames (plugin: Plugin): Unit = {
-    Spleef = new Minigame(plugin, Box(182, 3, -58, -157, 15, -90),
-              new Location (plugin.getServer.getWorld("world"), -167, 6, -75),
-              new Location (plugin.getServer.getWorld("world"),-168,4,-55))
+    val cfg = plugin.getConfig
+    val world = plugin.getServer.getWorld(cfg.getString("minigame.world"))
+
+    CageSchematic = ClipboardFormat.SCHEMATIC.load(new File(cfg.getString("minigame.cage")))
+
+    Spleef = new SpleefMinigame(plugin, new Box(world, cfg.getVector("minigame.spleef.minRegion"), cfg.getVector("minigame.spleef.maxRegion")),
+      cfg.getVector("minigame.spleef.spawnPos").toLocation(world),
+      cfg.getVector("minigame.spleef.signPos").toLocation(world),
+      ClipboardFormat.SCHEMATIC.load(new File(cfg.getString("minigame.spleef.template"))))
   }
 
   def leave (player: Player): Unit = {
     Spleef.tryLeave(player)
   }
 
-  def interact (plugin: Plugin, player:Player, sign: Sign): Unit = {
+  def ev (event: Event): Unit = {
+    Spleef.tryEv(event)
+  }
+
+  def signinteract (plugin: Plugin, player:Player, sign: Sign): Unit = {
     Spleef.tryJoin(player, sign.getLocation())
-    //this might stop everything tho
   }
 }

@@ -4,7 +4,7 @@ main: com.thomas.customworld.CustomWorldPluginJava
 description: CustomWorld's main plugin.
 authors: [Thomas Marlowe]
 website: http://example.com
-depend: []
+depend: [WorldEdit] #TODO: COREPROTECT!
 softdepend: []
 loadbefore: []
 permissions:
@@ -20,6 +20,8 @@ permissions:
     description: Quite useless... you can hit people in creative now
   hell:
     description: Bans, kicks, etc a specific player
+  config:
+    description: Modify the config using commands
 
 commands:
   rank:
@@ -38,7 +40,7 @@ commands:
     description: Deletes a home
     aliases: []
     usage: /delhome [homename]
-  lobby:
-    description: Leaves the current game
+  spawn:
+    description: Leaves the current game and/or teleports to spawn
     aliases: []
-    usage: /lobby
+    usage: /spawn

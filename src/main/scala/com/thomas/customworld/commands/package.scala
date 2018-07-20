@@ -12,7 +12,8 @@ package object commands {
     plugin.getCommand("sethome").setExecutor(new SetHomeCommand(sqldb))
     plugin.getCommand("delhome").setExecutor(new DelHomeCommand(sqldb))
 
-    plugin.getCommand("lobby").setExecutor(new LobbyCommand())
+    plugin.getCommand("spawn").setExecutor(new SpawnCommand())
+    //TODO: heal cmd
+    //TODO: SPEED
   }
-
 }

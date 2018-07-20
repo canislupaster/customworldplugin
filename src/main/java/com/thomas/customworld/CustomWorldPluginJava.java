@@ -3,9 +3,12 @@ package com.thomas.customworld;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -62,5 +65,21 @@ public class CustomWorldPluginJava extends JavaPlugin implements Listener {
     public void onAttack (EntityDamageByEntityEvent event) { CustomWorldPlugin.onAttack(event); }
 
     @EventHandler
+    public void onMove (PlayerMoveEvent event) { CustomWorldPlugin.onMove(event); }
+    @EventHandler
+    public void onTp (PlayerTeleportEvent event) { CustomWorldPlugin.onTp(event); }
+
+    @EventHandler
+    public void onFoodLevelChange (FoodLevelChangeEvent event) { CustomWorldPlugin.onFoodLevelChange(event); }
+
+    @EventHandler
     public void onDamage (EntityDamageEvent event) { CustomWorldPlugin.onDamage(event); }
+
+    @EventHandler
+    public void onDeath (PlayerDeathEvent event) { CustomWorldPlugin.onDeath(event); }
+
+    @EventHandler
+    public void onBlockBreak (BlockBreakEvent event) { CustomWorldPlugin.onBlockBreak(event); }
+
+    public void onItemDamage (PlayerItemDamageEvent event) { CustomWorldPlugin.onItemDamage(event); }
 }

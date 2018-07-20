@@ -27,9 +27,11 @@ package object messaging {
       case SuccessMsg () =>
         premsg + "§a" + LoadMessage("success")
       case InfoMsg (msg, None) =>
-        "§e" + LoadMessage(msg)
+        premsg + "§e" + LoadMessage(msg)
       case InfoMsg (msg, Some(aff)) =>
         s"§e${LoadMessage(msg)} $aff"
+      case InfoMsgRev (msg, pre) =>
+        s"§e$pre ${LoadMessage(msg)}"
       case HomeMessage (Some(msg), Home(name,world,x,y,z)) =>
         s"§e${LoadMessage(msg)} $name: $x,$y,$z"
       case HomeMessage (None, Home(name,world,x,y,z)) =>
@@ -52,6 +54,7 @@ package object messaging {
   case class ErrorMsg(err :String) extends Message
   case class SuccessMsg() extends Message
   case class InfoMsg (msg :String, affix:Option[String]) extends Message
+  case class InfoMsgRev (msg :String, prefix:String) extends Message
 
   case class PlayerMessage (tag :Rank, username:String, msg :String) extends Message
   case class PlayerJoinMessage (join:Boolean, tag :Rank, username :String) extends Message

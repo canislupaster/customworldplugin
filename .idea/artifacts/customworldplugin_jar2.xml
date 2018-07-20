@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="customworldplugin:jar2">
+    <output-path>$PROJECT_DIR$/../../</output-path>
+    <root id="archive" name="customworldplugin.jar">
+      <element id="module-output" name="customworldplugin-build" />
+      <element id="module-output" name="customworldplugin" />
+      <element id="library" level="project" name="Maven: com.github.takezoe:scala-jdbc_2.12:1.0.5" />
+      <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.6" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.11" />
+      <element id="library" level="project" name="Maven: org.scala-lang:scala-library:2.12.6" />
+      <element id="library" level="application" name="scala-sdk-2.12.6" />
+    </root>
+  </artifact>
+</component>

@@ -15,19 +15,19 @@ package object rank {
 
   def Ranks = List(Regular, Helper, Builder, Mod, Staff, StaffPlus)
 
-  def UpdateRank (player: Player, oldrank :Option[Rank], rank: Rank): Unit = {
-    oldrank foreach (x => x.Permissions foreach (PlayerPerms(player.getUniqueId).unsetPermission(_)))
-    rank.Permissions foreach (PlayerPerms(player.getUniqueId).setPermission(_, true))
+  def updateRank (player: Player, oldrank :Option[Rank], rank: Rank): Unit = {
+    oldrank foreach (x => x.permissions foreach (PlayerPerms(player.getUniqueId).unsetPermission(_)))
+    rank.permissions foreach (PlayerPerms(player.getUniqueId).setPermission(_, true))
   }
 
-  def AddPlayer (dbc:DBConstructor, player:Player, plugin: Plugin): Unit = {
+  def addPlayer (dbc:DBConstructor, player:Player, plugin: Plugin): Unit = {
     new PlayerDB (dbc()).autoClose(db => {
       PlayerPerms += player.getUniqueId -> player.addAttachment(plugin)
-      UpdateRank(player, None, db.GetRank(player.getUniqueId))
+      updateRank(player, None, db.GetRank(player.getUniqueId))
     })
   }
 
-  def RemovePlayer (dbc: DBConstructor, player: Player): Unit = {
+  def removePlayer (dbc: DBConstructor, player: Player): Unit = {
     PlayerPerms -= player.getUniqueId
   }
 }

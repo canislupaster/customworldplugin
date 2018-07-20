@@ -2,7 +2,14 @@ package com.thomas.customworld
 
 import java.util.regex.Pattern
 
-import scala.util.Try
+import com.boydti.fawe.`object`.schematic.Schematic
+import com.boydti.fawe.util.EditSessionBuilder
+import com.sk89q.worldedit
+import com.sk89q.worldedit.blocks.BaseBlock
+import com.sk89q.worldedit.regions.CuboidRegion
+import org.bukkit.util.BlockVector
+import org.bukkit.util.Vector
+import org.bukkit.{Location, World}
 
 package object util {
   def QuoteSurround (str:AnyRef) :String = {
@@ -10,19 +17,44 @@ package object util {
     '"' + replaced + '"'
   }
 
-  case class Box (minx:Int, miny:Int, minz:Int, maxx:Int, maxy:Int, maxz:Int)
+  def WEVec(x: Vector) = new worldedit.Vector(x.getBlockX, x.getBlockY, x.getBlockZ)
 
-  trait Parser[T] {
-    def parse(input: String): Option[T]
-  }
+  case class Box (bworld:World, min:worldedit.BlockVector, max:worldedit.BlockVector) extends CuboidRegion(min, max) {
+    def hasLoc (x:Location): Boolean = {
+      this.contains (WEVec (x.toVector))
+    }
 
-  def parse[T](input: String)(implicit parser: Parser[T]): Option[T] =
-    parser.parse(input)
+    def this(world:World, min:Vector, max:Vector) {
+      this(world, WEVec(min).toBlockVector, WEVec(max).toBlockVector)
+    }
 
-  implicit object IntParser extends Parser[Int] {
-    def parse(input: String):Option[Int] = Try(input.toInt).toOption
-  }
-  implicit object BooleanParser extends Parser[Boolean] {
-    def parse(input: String):Option[Boolean] = Try(input.toBoolean).toOption
+    def copy ():Schematic = {
+      val session = new EditSessionBuilder(bworld.getName).build()
+      new Schematic(session.lazyCopy(this))
+    }
+
+    def copyFromWorld (world2:World): Unit = {
+      val copyWorld = new EditSessionBuilder(world2.getName).autoQueue(false).build()
+      val pasteWorld = new EditSessionBuilder(bworld.getName).build()
+
+      val copied = copyWorld lazyCopy this
+
+      val schem = new Schematic(copied)
+      schem.paste(pasteWorld, this.getMinimumPoint, true)
+      pasteWorld.flushQueue()
+    }
+
+    def paste (schem: Schematic, air :Boolean): Unit = {
+      schem.getClipboard.setOrigin(schem.getClipboard.getRegion.getMinimumPoint)
+      val pasteWorld = new EditSessionBuilder(bworld.getName).build()
+      schem.paste(pasteWorld, this.getMinimumPoint, air)
+      pasteWorld.flushQueue()
+    }
+
+    def fillBox (id: Int): Unit = {
+      val session = new EditSessionBuilder(bworld.getName).build()
+      session.setBlocks (this, new BaseBlock(0))
+      session.flushQueue()
+    }
   }
 }

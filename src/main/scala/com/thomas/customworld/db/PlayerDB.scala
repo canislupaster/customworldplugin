@@ -14,7 +14,7 @@ class PlayerDB(conn: Connection) extends MainDB(conn) {
   def UpdateUser (playerid:UUID, playername:String): Unit = {
     val id = util.QuoteSurround(playerid.toString)
     val name = util.QuoteSurround(playername)
-    data.update(sql"INSERT INTO player VALUES (${playerid.toString},0,$playername, false) ON CONFLICT (playerid) DO UPDATE SET username=$playername")
+    data.update(sql"INSERT INTO player (playerid, username) VALUES (${playerid.toString}, $playername) ON DUPLICATE KEY UPDATE username=$playername")
   }
 
   def GetUUIDFromName (playername:String): Option[UUID] = {

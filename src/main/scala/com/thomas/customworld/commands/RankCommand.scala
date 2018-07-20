@@ -52,7 +52,7 @@ class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
                     sender.getServer.getPlayer(x) match {
                       case null => ()
                       case player:Player =>
-                        rank.UpdateRank (player, Some(udb GetRank x), y)
+                        rank.updateRank (player, Some(udb GetRank x), y)
                     }
 
                     udb SetRank(x, y)

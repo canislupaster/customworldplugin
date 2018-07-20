@@ -17,13 +17,13 @@ class HomeDB(conn:Connection) extends MainDB(conn) {
   }
 
   def GetNumHomes (userid:UUID): Integer = {
-    val Some(num:Int) = data.selectFirst(sql"SELECT Count(*) FROM home WHERE playerid=${userid.toString}"){x => x.getInt("count")}
+    val Some(num:Int) = data.selectFirst(sql"SELECT Count(*) FROM home WHERE playerid=${userid.toString}"){x => x.getInt("Count(*)")}
     num
   }
 
   def SetHome (userid:UUID, home:Home): Unit = {
     val Home(name, world, x, y, z) = home
-    data.update(sql"INSERT INTO home VALUES (${userid.toString}, $name, ${world.toString}, $x, $y, $z) ON CONFLICT (playerid, homename) DO UPDATE SET worldid=${world.toString}, x=$x, y=$y, z=$z")
+    data.update(sql"REPLACE INTO home VALUES (${userid.toString}, $name, ${world.toString}, $x, $y, $z)")
   }
 
   def DelHome (userid:UUID, homename:String): Boolean = {

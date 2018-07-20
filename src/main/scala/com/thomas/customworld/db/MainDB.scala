@@ -4,7 +4,7 @@ import java.sql.Connection
 
 import com.github.takezoe.scala.jdbc.DB
 
-class MainDB (conn:Connection) {
+class   MainDB (conn:Connection) {
   val data = DB (conn)
 
   def close(): Unit = {

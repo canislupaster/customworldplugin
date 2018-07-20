@@ -1,8 +1,8 @@
 package com.thomas.customworld
 
-import org.bukkit.event.block.BlockFadeEvent
-import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDamageEvent}
-import org.bukkit.event.player._
+import org.bukkit.event.block.{BlockBreakEvent, BlockFadeEvent, BlockPlaceEvent}
+import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDamageEvent, FoodLevelChangeEvent, PlayerDeathEvent}
+import org.bukkit.event.player.{PlayerTeleportEvent, _}
 import com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import com.thomas.customworld.messaging.{PlayerJoinMessage, PlayerMessage}
 import com.thomas.customworld.rank.Rank
@@ -11,6 +11,7 @@ import org.bukkit.block.Sign
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.{BanList, GameMode, Material, OfflinePlayer}
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 
 object CustomWorldPlugin {
   val plugin: CustomWorldPluginJava = CustomWorldPluginJava.get()
@@ -23,12 +24,13 @@ object CustomWorldPlugin {
     plugin.saveConfig()
 
     val opendb = dbcons()
-    opendb.createStatement().execute(db.InitializeDB)
+    var statement = opendb.createStatement()
+    db.InitializeDB foreach (statement.addBatch(_))
+    statement.executeBatch()
     opendb.close()
 
     messaging.LoadConfig(cfg)
     minigame.InitializeMinigames(plugin)
-
     commands.RegisterCommands(plugin, dbcons)
 
     plugin.getLogger.info("Successfully enabled and initialized database!")
@@ -60,12 +62,12 @@ object CustomWorldPlugin {
   }
 
   def onJoin (event: PlayerJoinEvent): Unit = {
-    rank.AddPlayer(dbcons, event.getPlayer, plugin)
+    rank.addPlayer(dbcons, event.getPlayer, plugin)
     event.setJoinMessage(PlayerJoinMessage(join=true, GetTag(event.getPlayer), event.getPlayer.getDisplayName).renderMessage)
   }
 
   def onQuit (event: PlayerQuitEvent): Unit = {
-    rank.RemovePlayer(dbcons, event.getPlayer)
+    rank.removePlayer(dbcons, event.getPlayer)
     minigame.leave(event.getPlayer)
     event.setQuitMessage(PlayerJoinMessage(join=false, GetTag(event.getPlayer), event.getPlayer.getDisplayName).renderMessage)
   }
@@ -85,9 +87,11 @@ object CustomWorldPlugin {
       event.setCancelled(PreventInteraction(event.getPlayer))
     }
 
-    event.getClickedBlock match {
-      case x:Sign => minigame.interact(plugin, event.getPlayer, x)
-      case _ => ()
+    if (event.hasBlock && event.getClickedBlock.getType == Material.SIGN_POST) {
+      event.getClickedBlock.getState match {
+        case x:Sign => minigame.signinteract(plugin, event.getPlayer, x)
+        case _ => ()
+      }
     }
   }
 
@@ -95,6 +99,14 @@ object CustomWorldPlugin {
     if (configuration.BlockedEntities contains event.getRightClicked.getType) {
       event.setCancelled(PreventInteraction(event.getPlayer))
     }
+  }
+
+  def onBlockBreak (event: BlockBreakEvent): Unit = {
+    minigame.ev(event)
+  }
+
+  def onPlaceBlock (event: BlockPlaceEvent): Unit = { //TODO: add this to java
+    minigame.ev(event)
   }
 
   def onAttack(event: EntityDamageByEntityEvent): Unit = {
@@ -114,5 +126,28 @@ object CustomWorldPlugin {
       event.getEntity.teleport(event.getEntity.getWorld.getSpawnLocation)
       event.setCancelled(true)
     }
+
+    minigame.ev(event)
+  }
+
+  def onDeath(event: PlayerDeathEvent): Unit = {
+    minigame.ev(event)
+  }
+
+  def onMove(event: PlayerMoveEvent): Unit = {
+    minigame.ev(event)
+  }
+
+  def onTp(event: PlayerTeleportEvent): Unit = {
+    minigame.ev(event)
+  }
+
+  def onFoodLevelChange (event: FoodLevelChangeEvent): Unit = {
+    event.setFoodLevel(20) //TODO: TEST
+    event.setCancelled(true)
+  }
+
+  def onItemDamage (event: PlayerItemDamageEvent): Unit = {
+    minigame.ev(event)
   }
 }

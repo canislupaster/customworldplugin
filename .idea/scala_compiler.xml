@@ -5,6 +5,13 @@
     <option name="uncheckedWarnings" value="true" />
     <option name="explainTypeErrors" value="true" />
     <option name="specialization" value="false" />
+    <profile name="Maven 1" modules="customworldplugin">
+      <option name="postfixOps" value="true" />
+      <parameters>
+        <parameter value="-dependencyfile" />
+        <parameter value="D:\Thomas\mcthings\Spigot\plugins\src\customworldplugin\target/.scala_dependencies" />
+      </parameters>
+    </profile>
     <profile name="sbt 1" modules="customworldplugin_222">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
