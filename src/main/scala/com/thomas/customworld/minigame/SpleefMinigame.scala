@@ -33,11 +33,13 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
 
   override def start(): Unit = {
     super.start()
-    playerDo ((x:Player) => _ => {
-      val item = new ItemStack(Material.SHEARS)
-      item.addEnchantment(Enchantment.DIG_SPEED, 5)
-      x.getInventory.setItemInHand(item)
-      x.setGameMode(GameMode.SURVIVAL)
+    playerDo ((spleefer:Player) => _ => {
+      val woolcrusher = new ItemStack(Material.SHEARS)
+      woolcrusher.addEnchantment(Enchantment.DIG_SPEED, 5)
+      woolcrusher.setUnbreakable(true)
+      woolcrusher.setDisplayName("Wool Crusher")
+      spleefer.getInventory.setItemInHand(item)
+      spleefer.setGameMode(GameMode.SURVIVAL)
     })
   }
 
