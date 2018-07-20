@@ -4,7 +4,7 @@ import java.io.File
 import java.util
 import java.util.UUID
 
-import com.thomas.customworld.{SimpleScoreboard, freeop}
+import com.thomas.customworld.{SimpleScoreboard, freeop, player}
 import com.thomas.customworld.util._
 import org.bukkit.{ChatColor, GameMode, Location}
 import org.bukkit.entity.Player
@@ -16,13 +16,13 @@ import com.boydti.fawe.FaweAPI
 import com.boydti.fawe.regions.general.CuboidRegionFilter
 import com.boydti.fawe.regions.general.plot.PlotSquaredFeature
 import com.boydti.fawe.util.EditSessionBuilder
+import com.sk89q.worldedit
 import com.sk89q.worldedit.{BlockVector, EditSession}
 import com.sk89q.worldedit.blocks.BaseBlock
 import com.sk89q.worldedit.extent.Extent
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.thomas.customworld.messaging.ErrorMsg
-import com.thomas.customworld.player._
 import org.bukkit.event.Event
 import org.bukkit.event.block.{BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.{EntityDamageEvent, PlayerDeathEvent}
@@ -31,13 +31,17 @@ import org.bukkit.event.player.{PlayerEvent, PlayerItemDamageEvent, PlayerMoveEv
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
 
-abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
+abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
   val minPlayers = 2
   val gameTime = 60
   var state:GameState = WaitingForPlayers ()
   val name = "MINIGAME"
 
-  val dim = CageSchematic.getClipboard.getDimensions.divide(2)
+  case class MinigamePlayer (playing:Boolean, inventory: Array[ItemStack])
+  def defaultPlayer (inventory:Array[ItemStack]) = MinigamePlayer(playing = false, inventory)
+  var players: mutable.HashMap[UUID, MinigamePlayer] = mutable.HashMap[UUID, MinigamePlayer]()
+
+  val dim: worldedit.Vector = CageSchematic.getClipboard.getDimensions.divide(2)
   val cageRegion = Box(region.bworld, WEVec(spawnLoc.toVector).subtract(dim).toBlockVector, WEVec(spawnLoc.toVector).add(dim).toBlockVector)
 
   initializeMap()
@@ -46,8 +50,15 @@ abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box
 
   runTaskTimer(plugin, 20, 20)
 
+  def getPlayers: Array[Player] = players map {case (x,y) => plugin.getServer.getPlayer(x)} toArray
+  def getMinigamePlayers: Array[MinigamePlayer] = players map { case (_, y) => y } toArray
+  def mapPlayers (x: MinigamePlayer => MinigamePlayer) : Unit = players map { case (u:UUID, y:MinigamePlayer) => players(u)(x(y)) }
+  def mapPlayer (u: UUID, x: MinigamePlayer => Unit): Unit = players (u)(x(players(u)))
+  def doPlayers (x: Player => Unit): Unit = getPlayers foreach x
+  def doMinigamePlayers (x: Player => MinigamePlayer => Unit): Unit = players foreach {case (u,m) => x(plugin.getServer.getPlayer(u))(m)}
+
   def renderScoreboard (): Unit = {
-    val playersarr = getPlayers [PlayerType]
+    val playersarr = getPlayers
     val scoreboard = new SimpleScoreboard(name)
     scoreboard.blankLine()
     state.toString split "\\r?\\n" foreach scoreboard.add
@@ -65,7 +76,7 @@ abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box
   def start (): Unit = {
     cageRegion fillBox 0
 
-    mapPlayers[PlayerType] {case (x,y) => players += (x -> y.copy(true))}
+    mapPlayers (_.copy(playing=true))
   }
 
   def startCountdown(): Unit = { }
@@ -73,7 +84,7 @@ abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box
   def end(): Unit = { initializeMap() }
 
   def tickPlaying (timeLeft:Int) :Boolean = {
-    val left = getCustomPlayers[PlayerType].count {case (_, x) => x.playing}
+    val left = getMinigamePlayers count (_.playing)
     if (left <= 1 || timeLeft <= 0) { true } else false
   }
 
@@ -86,17 +97,17 @@ abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box
           Countdown(5)
         } else state
       case Countdown(timeleft:Int) if timeleft <= 0 =>
-        playerDo (x => _ => x.sendTitle("GO!", "", 0, 20, 40))
+        doPlayers (_.sendTitle("GO!", "", 0, 20, 40))
         start()
         Playing(gameTime)
       case Countdown(timeleft:Int) =>
-        playerDo (x => _ => x.sendTitle(s"$timeleft", "left before game starts", 0, 20, 0))
+        doPlayers (_.sendTitle(s"$timeleft", "left before game starts", 0, 20, 0))
         Countdown(timeleft-1)
       case Playing (timeLeft:Int) =>
         if (tickPlaying(timeLeft)) {
           end()
 
-          playerDo (x => _ => leave(x))
+          doPlayers (leave)
 
           WaitingForPlayers ()
         } else Playing(timeLeft-1)
@@ -107,32 +118,31 @@ abstract class Minigame[PlayerType <: MinigamePlayer](plugin: Plugin, region:Box
     state = updateState(state)
   }
 
-  def join (player: Player): Unit = {
-    inventories += (player.getUniqueId -> player.getInventory.getContents)
-    players += (player.getUniqueId -> defaultPlayer)
+  def join (newplayer: Player): Unit = {
+    players += (newplayer.getUniqueId -> defaultPlayer (newplayer.getInventory.getContents))
+    player.joinMinigames (newplayer)
 
-    player.setGameMode(GameMode.ADVENTURE)
-    player.getInventory.clear()
+    newplayer.setGameMode(GameMode.ADVENTURE)
+    newplayer.getInventory.clear()
 
-    player.teleport(spawnLoc)
+    newplayer.teleport(spawnLoc)
   }
 
   def spectate (player: Player): Unit = {
-    players += (player.getUniqueId -> MinigamePlayer(false))
+    mapPlayer (player.getUniqueId, _.copy (playing = false))
 
     player.setAllowFlight(true)
     player.setFlying(true)
     player.teleport(spawnLoc)
   }
 
-  def leave (player: Player): Unit = {
-    players -= player.getUniqueId
+  def leave (leaveplayer: Player): Unit = {
+    leaveplayer.getInventory.setContents(players(leaveplayer.getUniqueId).inventory)
+    players -= leaveplayer.getUniqueId
 
-    player.getInventory.setContents(inventories(player.getUniqueId))
-    inventories -= player.getUniqueId
-
-    player.setScoreboard(plugin.getServer.getScoreboardManager.getNewScoreboard)
-    player.teleport(signLoc)
+    leaveplayer.setScoreboard(plugin.getServer.getScoreboardManager.getNewScoreboard)
+    leaveplayer.teleport(signLoc)
+    player.joinFreeOP(leaveplayer)
   }
 
 

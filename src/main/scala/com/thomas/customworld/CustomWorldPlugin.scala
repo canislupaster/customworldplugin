@@ -45,7 +45,7 @@ object CustomWorldPlugin {
 
     db.UpdateUser(event.getPlayer.getUniqueId, event.getPlayer.getName)
 
-    if (event.getPlayer.isBanned && (db.GetRank(event.getPlayer.getUniqueId) HasPermission "noban")) {
+    if (event.getPlayer.isBanned && (db.getRank(event.getPlayer.getUniqueId) HasPermission "noban")) {
       plugin.getServer.getBanList(BanList.Type.NAME).pardon(event.getPlayer.getName)
       event.allow()
     }
@@ -58,7 +58,7 @@ object CustomWorldPlugin {
   }
 
   def GetTag (player: Player): Rank = {
-    new PlayerDB(dbcons()) autoClose(_ GetRank player.getUniqueId)
+    new PlayerDB(dbcons()) autoClose(_ getRank player.getUniqueId)
   }
 
   def onJoin (event: PlayerJoinEvent): Unit = {

@@ -2,24 +2,25 @@ package com.thomas.customworld
 
 import java.util.UUID
 
+import com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import com.thomas.customworld.rank.Rank
-import org.bukkit.Location
+import org.bukkit.{GameMode, Location}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.plugin.Plugin
+import com.thomas.customworld.CustomWorldPlugin._
 
 import scala.collection.mutable
 
 package object player {
-  var pluginInstance:Plugin = _
+  class CustomWorldPlayer (player: Player) {
+    var rank:Rank = new PlayerDB(dbcons()).autoClose(db => db.getRank(player.getUniqueId))
+    var permissionAttachment:PermissionAttachment = player.addAttachment(plugin)
 
-  case class CustomWorldPlayer (permissionAttachment: PermissionAttachment, rank: Rank) {
     var rankPerms: Set[String] = Set()
     var perms: Set[String] = Set()
     var beforeTp: Option[Location] = None
-
-    updateRank(rank)
 
     def updatePermissions (set: Set[String]): Unit = {
       perms foreach permissionAttachment.unsetPermission
@@ -32,17 +33,18 @@ package object player {
       rankPerms = rank.permissions
       rankPerms foreach (permissionAttachment.setPermission(_,true))
     }
+
+    def deletePermissions(): Unit = {
+      permissionAttachment.remove()
+    }
   }
 
-  def initialize (plugin: Plugin): Unit = pluginInstance = plugin
-
-  case class FreeOPPlayer (player: CustomWorldPlayer) extends CustomWorldPlayer (player.permissionAttachment, player.rank) {
+  case class FreeOPPlayer (player: Player) extends CustomWorldPlayer (player) {
     updatePermissions(Set("fawe.permpack.basic"))
+
   }
 
-  case class MinigamePlayer (player: CustomWorldPlayer, inventory:Array[ItemStack]) extends CustomWorldPlayer (player.permissionAttachment, player.rank) {
-    var playing:Boolean = false
-  }
+  case class MinigamePlayer (player: Player) extends CustomWorldPlayer (player)
 
   var players: mutable.HashMap[UUID, CustomWorldPlayer] = mutable.HashMap()
 
@@ -50,10 +52,10 @@ package object player {
     players filter(_._2.isInstanceOf[T]) mapValues  (_.asInstanceOf[T])
   }
 
-  def updateCustomPlayer (uUID: UUID, x:CustomWorldPlayer): Unit = players update(uUID, x)
+  def updateCustomPlayer[T] (uUID: UUID, x:T => T): Unit = players (uUID) (x(getCustomPlayers[T](uUID)))
 
   def getPlayers[T]: Array[Player] = {
-    getCustomPlayers[T] map {case (x, _) => pluginInstance.getServer.getPlayer(x)} toArray
+    getCustomPlayers[T] map {case (x, _) => plugin.getServer.getPlayer(x)} toArray
   }
 
   def doPlayers[T] (x: Player => Unit): Unit = {
@@ -62,5 +64,22 @@ package object player {
 
   def mapPlayers[T] (func: T => T): Unit = {
     getCustomPlayers[T] foreach {case (x,u) => players (x) (func(u))}
+  }
+
+  def getPermissions (player: Player): PermissionAttachment = player.addAttachment(plugin)
+
+  def joinMinigames (player: Player): Unit = {
+
+  }
+
+  def joinFreeOP (player: Player): Unit = {
+    players(player.getUniqueId) match {
+      case x:MinigamePlayer => {
+        x.deletePermissions()
+      }
+    }
+
+    players(player.getUniqueId)(FreeOPPlayer)
+    player.setGameMode(GameMode.CREATIVE)
   }
 }

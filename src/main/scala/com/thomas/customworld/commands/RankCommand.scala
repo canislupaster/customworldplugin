@@ -15,7 +15,7 @@ class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
     val udb = new PlayerDB(sqldb())
 
     def GetPlayerRank (x:UUID) {
-      InfoMsg("rankis", Some((udb GetRank x).toString)).asInstanceOf[Message] sendClient sender
+      InfoMsg("rankis", Some((udb getRank x).toString)).asInstanceOf[Message] sendClient sender
       udb close()
     }
 
@@ -52,7 +52,7 @@ class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
                     sender.getServer.getPlayer(x) match {
                       case null => ()
                       case player:Player =>
-                        rank.updateRank (player, Some(udb GetRank x), y)
+                        rank.updateRank (player, Some(udb getRank x), y)
                     }
 
                     udb SetRank(x, y)

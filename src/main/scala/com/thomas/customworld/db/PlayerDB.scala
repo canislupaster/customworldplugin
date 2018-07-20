@@ -26,7 +26,7 @@ class PlayerDB(conn: Connection) extends MainDB(conn) {
     }
   }
 
-  def GetRank (playerid:UUID) : Rank = {
+  def getRank(playerid:UUID) : Rank = {
     data.selectFirst(sql"SELECT rankid FROM player WHERE playerid=${playerid.toString}") { x => x.getInt("rankid") }
       match {case Some(x:Int) => rank.Ranks(x); case _ => rank.Ranks.head}
   }

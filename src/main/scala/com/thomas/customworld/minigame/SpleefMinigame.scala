@@ -23,7 +23,7 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
 
   override def end (): Unit = {
     super.end()
-    playerDo (x => y => if (y.playing) {InfoMsgRev ("spleefwon", x.getDisplayName) broadCast (_ => true, plugin.getServer)})
+    doMinigamePlayers (x => y => if (y.playing) {InfoMsgRev ("spleefwon", x.getDisplayName) broadCast (_ => true, plugin.getServer)})
   }
 
   override def initializeMap(): Unit = {
@@ -33,7 +33,7 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
 
   override def start(): Unit = {
     super.start()
-    playerDo ((x:Player) => _ => {
+    doPlayers ((x:Player) => {
       val item = new ItemStack(Material.SHEARS)
       item.addEnchantment(Enchantment.DIG_SPEED, 5)
       x.getInventory.setItemInHand(item)

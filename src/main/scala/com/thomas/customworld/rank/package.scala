@@ -23,7 +23,7 @@ package object rank {
   def addPlayer (dbc:DBConstructor, player:Player, plugin: Plugin): Unit = {
     new PlayerDB (dbc()).autoClose(db => {
       PlayerPerms += player.getUniqueId -> player.addAttachment(plugin)
-      updateRank(player, None, db.GetRank(player.getUniqueId))
+      updateRank(player, None, db.getRank(player.getUniqueId))
     })
   }
 
