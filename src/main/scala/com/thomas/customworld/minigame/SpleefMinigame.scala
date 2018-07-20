@@ -58,7 +58,8 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
     if (block.getBlock.getType == Material.WOOL)
       block.setDropItems(false) 
     if (block.getBlock.getType == Material.TNT)
-      world.spawnEntity(l, EntityType.PRIMED_TNT);
+      val boom = new world.spawnEntity(blockloc, EntityType.PRIMED_TNT)
+      boom.setFuseTicks("5")
     else 
       block.setCancelled(true)
   }
