@@ -11,12 +11,14 @@ import com.thomas.customworld.messaging.InfoMsgRev
 import com.thomas.customworld.util.Box
 import org.bukkit
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Player
+import org.bukkit.entity
+import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.{GameMode, Location, Material, World}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import org.bukkit.particle
 
 class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location, template: Schematic) extends Minigame (plugin, region, spawnLoc, signLoc) {
   override val name: String = "SPLEEF"
@@ -38,7 +40,7 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
       woolcrusher.addEnchantment(Enchantment.DIG_SPEED, 5)
       woolcrusher.setUnbreakable(true)
       woolcrusher.setDisplayName("Wool Crusher")
-      spleefer.getInventory.setItemInHand(item)
+      spleefer.getInventory.setItemInHand(woolcrusher)
       spleefer.setGameMode(GameMode.SURVIVAL)
     })
   }
@@ -51,8 +53,13 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
     }
   }
 
-  override def blockBreak(event: BlockBreakEvent): Unit = {
-    if (event.getBlock.getType == Material.WOOL)
-      event.setDropItems(false) else event.setCancelled(true)
+  override def blockBreak(block: BlockBreakEvent): Unit = {
+    val blockloc = new block.getLocation()
+    if (block.getBlock.getType == Material.WOOL)
+      block.setDropItems(false) 
+    if (block.getBlock.getType == Material.TNT)
+      world.spawnEntity(l, EntityType.PRIMED_TNT);
+    else 
+      block.setCancelled(true)
   }
 }
