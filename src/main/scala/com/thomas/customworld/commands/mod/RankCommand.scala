@@ -4,7 +4,8 @@ import java.util.UUID
 
 import com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import com.thomas.customworld.messaging._
-import com.thomas.customworld.{messaging, rank, util}
+import com.thomas.customworld.player.rank
+import com.thomas.customworld.{messaging, player, util}
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
@@ -46,13 +47,13 @@ class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
         {
           (udb.GetUUIDFromName(pname) match {
               case Some(x:UUID) =>
-                val newrank = rank.Ranks find (x => x.toString == newrankstr)
+                val newrank = rank.ranks find (x => x.toString == newrankstr)
                 newrank match {
                   case Some(y) =>
                     sender.getServer.getPlayer(x) match {
                       case null => ()
-                      case player:Player =>
-                        rank.updateRank (player, Some(udb getRank x), y)
+                      case rankplayer:Player =>
+                         player.updateRank (rankplayer, udb getRank x)
                     }
 
                     udb SetRank(x, y)

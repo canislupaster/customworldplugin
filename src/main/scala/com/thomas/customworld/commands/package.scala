@@ -13,7 +13,7 @@ package object commands {
     plugin.getCommand("delhome").setExecutor(new DelHomeCommand(sqldb))
 
     plugin.getCommand("spawn").setExecutor(new SpawnCommand())
-    //TODO: heal cmd
+    plugin.getCommand("heal").setExecutor(new HealCommand())
     //TODO: SPEED
   }
 }

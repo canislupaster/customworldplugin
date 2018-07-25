@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
 import scala.collection.JavaConverters
+import scala.collection.JavaConverters._
 
 package object configuration {
   val ConfigDefaults:java.util.Map[String, AnyRef] = {
@@ -24,6 +25,8 @@ package object configuration {
       "lang.tpto" -> "Teleporting to",
       "lang.spleefwon" -> "won a round of spleef!",
       "lang.rankis" -> "Rank:",
+      "lang.opped" -> "You have been opped!",
+      "lang.noloc" -> "Location not found!",
       "lang.leavegame" -> "Leave the game first with /spawn",
 
       "minigame.world" -> "world",
@@ -31,16 +34,21 @@ package object configuration {
       "minigame.spleef.minRegion" -> new Vector(-155, -2, -92),
       "minigame.spleef.maxRegion" -> new Vector(-184, 15, -56),
       "minigame.spleef.spawnPos" -> new Vector (-170, 10, -73),
-      "minigame.spleef.signPos" -> new Vector(-169, 5, -56),
+      "minigame.spleef.signPos" -> new Vector(-169, 4, -55),
       "minigame.cage" -> "./cage.schematic",
-
-      "explosions" -> false,
 
       "db.hostname" -> "localhost",
       "db.port" -> 3306,
       "db.database" -> "customworld",
       "db.username" -> "root",
-      "db.password" -> "mysql"
+      "db.password" -> "mysql",
+
+      "permission.regular" -> List().asJava,
+      "permission.helper" -> List().asJava,
+      "permission.builder" -> List("blocks", "spawnbuild").asJava,
+      "permission.mod" -> List("tempban", "kick", "fawe.admin").asJava,
+      "permission.staff" -> List("setrank", "minecraft.command.gamemode", "minecraft.command.kick", "blocks", "ban").asJava,
+      "permission.staff+" -> List("noban", "hell", "config")
     ) mapValues (_.asInstanceOf[AnyRef])
     JavaConverters.mapAsJavaMap (map)
   }
