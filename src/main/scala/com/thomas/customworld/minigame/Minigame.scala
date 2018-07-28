@@ -35,7 +35,7 @@ import scala.reflect.ClassTag
 
 abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
   val minPlayers = 2
-  val gameTime = 60
+  val gameTime = 500
   var state:GameState = WaitingForPlayers ()
   val name = "MINIGAME"
 
