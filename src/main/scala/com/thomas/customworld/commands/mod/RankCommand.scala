@@ -57,6 +57,7 @@ class RankCommand extends CommandExecutor {
                     sender.getServer.getPlayer(toUUID(x)) match {
                       case rankplayer: Player =>
                         player.getPlayer(rankplayer).updateRank(y)
+                      player.kickPlayer("&eYou got promoted to new rank, please rejoin!")
                       case null => ()
                     }
 
