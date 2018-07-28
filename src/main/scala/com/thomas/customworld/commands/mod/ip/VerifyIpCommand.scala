@@ -1,7 +1,8 @@
-package com.thomas.customworld.commands.ip
+package com.thomas.customworld.commands.mod.ip
 
-import com.thomas.customworld.db.{DBConstructor, IpDB}
-import com.thomas.customworld.messaging.{ErrorMsg, Message, SuccessMsg}
+import com.thomas.customworld.db.{DBConstructor, IpDB, MuteDB}
+import com.thomas.customworld.messaging._
+import com.thomas.customworld.player
 import com.thomas.customworld.util._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
@@ -15,9 +16,13 @@ class VerifyIpCommand extends CommandExecutor {
           case x:Player =>
             new IpDB().autoClose (y => y.addIp(x.getUniqueId, x.getAddress.getAddress.getHostAddress) match {
               case 0 => ErrorMsg("alreadyexists")
-              case _ => SuccessMsg
+              case _ =>
+                InfoMsg (RuntimeMsg(x.getName), ConfigMsg("verified"), RuntimeMsg(sender.getName)) globalBroadcast sender.getServer
+
+                player.getPlayer(x).verify()
+                SuccessMsg
             }) sendClient sender
-          case _ => ErrorMsg("invalidarg") sendClient sender
+          case _ => ErrorMsg("noplayer") sendClient sender
         }
 
         true

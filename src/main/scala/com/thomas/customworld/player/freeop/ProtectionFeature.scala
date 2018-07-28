@@ -1,4 +1,4 @@
-package com.thomas.customworld.freeop
+package com.thomas.customworld.player.freeop
 
 import com.boydti.fawe.`object`.FawePlayer
 import com.boydti.fawe.regions.FaweMaskManager.MaskType
@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import com.sk89q.worldedit.Vector
 import org.bukkit.plugin.Plugin
+import com.thomas.customworld.freeop.protectedRegions
 
 class ProtectionFeature[T](plugin: Plugin) extends FaweMaskManager[T](plugin.getName) {
   def isAllowed(player: FawePlayer[T]): Boolean = player.hasPermission("spawnbuild")

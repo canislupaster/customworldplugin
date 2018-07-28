@@ -4,35 +4,42 @@ import java.sql.{Connection, ResultSet}
 import java.util.UUID
 
 import com.github.takezoe.scala.jdbc._
-import com.thomas.customworld.rank
-import com.thomas.customworld.util
-import com.thomas.customworld.rank.Rank
+import com.thomas.customworld.player.rank
+import com.thomas.customworld.player.rank.Rank
+import com.thomas.customworld.util._
 import org.bukkit.entity.Player
 
-class PlayerDB(conn: Connection) extends MainDB(conn) {
+class PlayerDB() extends MainDB() {
 
-  def UpdateUser (playerid:UUID, playername:String): Unit = {
-    val id = util.QuoteSurround(playerid.toString)
-    val name = util.QuoteSurround(playername)
-    data.update(sql"INSERT INTO player (playerid, username) VALUES (${playerid.toString}, $playername) ON DUPLICATE KEY UPDATE username=$playername")
+  def updateUser(playerid:String, playername:String): Unit = {
+    data.update(sql"INSERT INTO player (playerid, username) VALUES ($playerid, $playername) ON DUPLICATE KEY UPDATE username=$playername")
   }
 
-  def GetUUIDFromName (playername:String): Option[UUID] = {
-    data.selectFirst(sql"SELECT * FROM player WHERE username=$playername") { x =>
-      UUID.fromString(x.getString("playerid"))
+  def getUUIDFromName(playername:String): Option[String] = {
+    data.selectFirst(sql"SELECT * FROM player WHERE LOWER(username) LIKE LOWER($playername)") { x =>
+      x.getString("playerid")
     } match {
-      case Some(x:UUID) => Some(x)
+      case Some(x:String) => Some(x)
       case _ => None
     }
   }
 
-  def getRank(playerid:UUID) : Rank = {
-    data.selectFirst(sql"SELECT rankid FROM player WHERE playerid=${playerid.toString}") { x => x.getInt("rankid") }
-      match {case Some(x:Int) => rank.Ranks(x); case _ => rank.Ranks.head}
+  def getRank(playerid:String) : Rank = {
+    data.selectFirst(sql"SELECT rankid FROM player WHERE playerid=$playerid") { x => x.getInt("rankid") }
+      match {case Some(x:Int) => rank.ranks(x); case _ => rank.ranks.head}
   }
 
-  def SetRank (playerid:UUID, newrank:Rank) : Unit = {
-    val ranknum = rank.Ranks indexOf newrank
-    data.update(sql"UPDATE player SET rankid=$ranknum WHERE playerid=${playerid.toString}")
+  def setRank(playerid:String, newrank:Rank) : Unit = {
+    val ranknum = rank.ranks indexOf newrank
+    data.update(sql"UPDATE player SET rankid=$ranknum WHERE playerid=$playerid")
+  }
+
+  def getNick(playerid:String) : Option[String] = {
+    val x = data.selectFirst(sql"SELECT nickname FROM player WHERE playerid=$playerid") {x => x.getString("nickname")}
+    x.flatMap (Option(_))
+  }
+
+  def setNick(playerid:String, nick:String) : Int = {
+    data.update(sql"UPDATE IGNORE player SET nickname=$nick WHERE playerid=$playerid")
   }
 }

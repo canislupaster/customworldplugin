@@ -4,7 +4,7 @@ main: com.thomas.customworld.CustomWorldPluginJava
 description: CustomWorld's main plugin.
 authors: [Thomas Marlowe]
 website: http://example.com
-depend: [WorldEdit] #TODO: COREPROTECT!
+depend: [FastAsyncWorldEdit, WorldEdit, CoreProtect]
 softdepend: []
 loadbefore: []
 permissions:
@@ -22,6 +22,28 @@ permissions:
     description: Bans, kicks, etc a specific player
   config:
     description: Modify the config using commands
+  creative:
+    description: Allows access to creative commands, such as heal
+  smite:
+    description: Allows smiting
+  kick:
+    description: Allows kicking
+  tempban:
+    description: Allows tempbanning
+  ban:
+    description: Allows permanent bans
+  mute:
+    description: Allows muting
+  cmdspy:
+    description: Enables/disables command spy
+  world:
+    description: Allows you to change worlds
+  manageip:
+    description: Manage ips
+  jumppad:
+    description: Configure jumppads
+  talk:
+    description: Allows a player to chat
 
 commands:
   rank:
@@ -44,3 +66,63 @@ commands:
     description: Leaves the current game and/or teleports to spawn
     aliases: []
     usage: /spawn
+  heal:
+    description: Heals yourself and removes effects
+    aliases: []
+    usage: /heal
+  back:
+    description: Sends you to your last location before teleportation (if any)
+    aliases: []
+    usage: /back
+  world:
+    description: Switches your world
+    aliases: []
+    usage: /world overworld|flatlands
+  verify:
+    description: Verifies an ip.
+    aliases: []
+    usage: /verify [player]
+  clearips:
+    description: Clears all ips from a player.
+    aliases: []
+    usage: /clearips [player]
+  nick:
+    description: Sets your display name
+    aliases: []
+    usage: /nick [name]
+  smite:
+    description: Smites a player
+    aliases: []
+    usage: /smite [player]
+  help:
+    description: Shows the rules
+    aliases: []
+    usage: /help
+  tempban:
+    description: Temporary ip ban
+    aliases: []
+    usage: /tempban [player] [length] [reason]
+  ban:
+    description: Permanent ip ban
+    aliases: []
+    usage: /ban [player] [reason]
+  unban:
+    description: Un(ip)bans a player
+    aliases: []
+    usage: /unban [player]
+  mute:
+    description: Mutes a player
+    aliases: []
+    usage: /mute [player] [length]
+  unmute:
+    description: Unmutes a player
+    aliases: []
+    usage: /unmute [player] [reason]
+  kick:
+    description: Kicks a player
+    aliases: []
+    usage: /kick [player] [reason]
+  jumppad:
+    description: Configure jumppads
+    aliases: []
+    usage: /jumppad on|off strength

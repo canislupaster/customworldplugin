@@ -1,22 +1,21 @@
-package com.thomas.customworld.commands
+package com.thomas.customworld.commands.mod
 
 import java.util.UUID
 
 import com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import com.thomas.customworld.messaging._
+import com.thomas.customworld.player
 import com.thomas.customworld.player.rank
-import com.thomas.customworld.{messaging, player, util}
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
+import com.thomas.customworld.util._
 
-import scala.Option
-
-class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
+class RankCommand extends CommandExecutor {
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    val udb = new PlayerDB(sqldb())
+    val udb = new PlayerDB()
 
     def GetPlayerRank (x:UUID) {
-      InfoMsg("rankis", Some((udb getRank x).toString)).asInstanceOf[Message] sendClient sender
+      InfoMsg(ConfigMsg("rankis"), RuntimeMsg((udb getRank x).toString)) sendClient sender
       udb close()
     }
 
@@ -30,41 +29,46 @@ class RankCommand (sqldb: DBConstructor) extends CommandExecutor {
         true
 
       case Array(pname) =>
-        udb.GetUUIDFromName(pname) match {
+        udb.getUUIDFromName(pname) match {
           case None => ErrorMsg("noplayer").asInstanceOf[Message] sendClient sender
           case Some(x) => GetPlayerRank(x)
         }
 
         true
 
-      case Array(pname, newrankstr) =>
+      case Array(pname, newrankstr) if sender.hasPermission("setrank") =>
 
-        if (sender match {
-            case x:Player =>
-              x.hasPermission("setrank")
-            case _ => true
-          })
-        {
-          (udb.GetUUIDFromName(pname) match {
-              case Some(x:UUID) =>
-                val newrank = rank.ranks find (x => x.toString == newrankstr)
-                newrank match {
-                  case Some(y) =>
-                    sender.getServer.getPlayer(x) match {
+        val currank = sender match {
+          case x: Player if x.getName.toLowerCase == pname.toLowerCase =>
+            ErrorMsg("norankyourself") sendClient sender
+            None
+          case x: Player => Some(rank.ranks indexOf (udb getRank x.getUniqueId))
+          case _ => Some(Integer.MAX_VALUE)
+        }
+
+        currank match {
+          case Some(r) => (udb.getUUIDFromName(pname) match {
+            case Some(x: String) if rank.ranks.indexOf(udb getRank x) > r => ErrorMsg("norankhigher")
+            case Some(x: String) =>
+              val newrank = rank.ranks find (x => x.toString.toLowerCase == newrankstr.toLowerCase)
+              newrank match {
+                case Some(y) if rank.ranks.indexOf(y) > r => ErrorMsg("norankhigherrank")
+                case Some(y) =>
+                    sender.getServer.getPlayer(toUUID(x)) match {
+                      case rankplayer: Player =>
+                        player.getPlayer(rankplayer).updateRank(y)
                       case null => ()
-                      case rankplayer:Player =>
-                         player.updateRank (rankplayer, udb getRank x)
                     }
 
-                    udb SetRank(x, y)
+                    udb setRank(x, y)
                     udb close()
-                    SuccessMsg()
+                    SuccessMsg
                   case _ => ErrorMsg("invalidarg")
                 }
               case None => ErrorMsg("noplayer")
-          }) sendClient sender
-        true } else {false}
-
+            }) sendClient sender
+          case _ => () }
+        true
       case _ => false
     }
   }

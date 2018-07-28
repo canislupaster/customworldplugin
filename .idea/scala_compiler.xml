@@ -12,6 +12,12 @@
         <parameter value="D:\Thomas\mcthings\Spigot\plugins\src\customworldplugin\target/.scala_dependencies" />
       </parameters>
     </profile>
+    <profile name="Maven 2" modules="CustomCore">
+      <parameters>
+        <parameter value="-dependencyfile" />
+        <parameter value="D:\Thomas\mcthings\Spigot\plugins\src\customworldplugin\target/.scala_dependencies" />
+      </parameters>
+    </profile>
     <profile name="sbt 1" modules="customworldplugin_222">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />

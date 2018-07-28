@@ -1,8 +1,8 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="CustomCore:jar">
+  <artifact type="jar" name="CustomCore:jar">
     <output-path>$PROJECT_DIR$/../..</output-path>
-    <root id="archive" name="customworldplugin.jar">
-      <element id="module-output" name="customworldplugin" />
+    <root id="archive" name="CustomCore.jar">
+      <element id="module-output" name="CustomCore" />
       <element id="extracted-dir" path="$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.12.6-sources.jar" path-in-jar="/" />
@@ -20,9 +20,9 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../apps/Maven/org/yaml/snakeyaml/1.19/snakeyaml-1.19.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../apps/Maven/org/scalamacros/resetallattrs_2.12/1.0.0/resetallattrs_2.12-1.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../apps/Maven/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar" path-in-jar="/" />
-      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.11" />
       <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.6" />
       <element id="library" level="project" name="Maven: com.github.takezoe:scala-jdbc_2.12:1.0.5" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.11" />
       <element id="library" level="project" name="Maven: org.scala-lang:scala-library:2.12.6" />
     </root>
   </artifact>

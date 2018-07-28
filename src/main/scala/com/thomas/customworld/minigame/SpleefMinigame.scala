@@ -7,7 +7,7 @@ import com.boydti.fawe.util.EditSessionBuilder
 import com.sk89q.worldedit.blocks.BaseBlock
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.sk89q.worldedit.function.pattern.{Pattern, RandomPattern}
-import com.thomas.customworld.messaging.InfoMsgRev
+import com.thomas.customworld.messaging.{ConfigMsg, InfoMsg, RuntimeMsg}
 import com.thomas.customworld.util.Box
 import org.bukkit
 import org.bukkit.enchantments.Enchantment
@@ -18,12 +18,14 @@ import org.bukkit.{GameMode, Location, Material, World}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location, template: Schematic) extends Minigame (plugin, region, spawnLoc, signLoc) {
+class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location, template: Schematic) extends Minigame[SimpleMinigamePlayer] (plugin, region, spawnLoc, signLoc) {
   override val name: String = "SPLEEF"
+  override def defaultPlayer(inv:Array[ItemStack]) = SimpleMinigamePlayer(inv)
+  override val gameTime = 300
 
   override def end (): Unit = {
     super.end()
-    doMinigamePlayers (x => y => if (y.playing) {InfoMsgRev ("spleefwon", x.getDisplayName) broadCast (_ => true, plugin.getServer)})
+    doMinigamePlayers (x => y => if (y.playing) {InfoMsg (RuntimeMsg(x.getDisplayName), ConfigMsg("spleefwon")) globalBroadcast plugin.getServer})
   }
 
   override def initializeMap(): Unit = {

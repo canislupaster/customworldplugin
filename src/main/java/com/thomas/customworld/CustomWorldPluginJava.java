@@ -5,11 +5,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CustomWorldPluginJava extends JavaPlugin implements Listener {
@@ -70,6 +72,9 @@ public class CustomWorldPluginJava extends JavaPlugin implements Listener {
     public void onTp (PlayerTeleportEvent event) { CustomWorldPlugin.onTp(event); }
 
     @EventHandler
+    public void onPreCommand (PlayerCommandPreprocessEvent event) { CustomWorldPlugin.onPreCommand(event); }
+
+    @EventHandler
     public void onFoodLevelChange (FoodLevelChangeEvent event) { CustomWorldPlugin.onFoodLevelChange(event); }
 
     @EventHandler
@@ -81,5 +86,24 @@ public class CustomWorldPluginJava extends JavaPlugin implements Listener {
     @EventHandler
     public void onBlockBreak (BlockBreakEvent event) { CustomWorldPlugin.onBlockBreak(event); }
 
+    @EventHandler
+    public void onBlockPlace (BlockPlaceEvent event) { CustomWorldPlugin.onBlockPlace(event); }
+
+    @EventHandler
+    public void onExplosionPrime (ExplosionPrimeEvent event) { CustomWorldPlugin.onExplosionPrime(event); }
+
+    @EventHandler
     public void onItemDamage (PlayerItemDamageEvent event) { CustomWorldPlugin.onItemDamage(event); }
+
+    @EventHandler
+    public void onVEnter (VehicleEnterEvent event) { CustomWorldPlugin.onVEnter(event); }
+
+    @EventHandler
+    public void onVDamage (VehicleDamageEvent event) { CustomWorldPlugin.onVDamage(event); }
+
+    @EventHandler
+    public void onVMove (VehicleMoveEvent event) { CustomWorldPlugin.onVMove(event); }
+
+    @EventHandler
+    public void onVExit (VehicleExitEvent event) { CustomWorldPlugin.onVExit(event); }
 }

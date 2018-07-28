@@ -1,5 +1,11 @@
 package com.thomas.customworld.commands
 
-class HelpCommand {
+import com.thomas.customworld.messaging.{ConfigMsg, InfoMsg}
+import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 
+class HelpCommand () extends CommandExecutor {
+  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
+    InfoMsg(ConfigMsg("help")) sendClient sender
+    true
+  }
 }

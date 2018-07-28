@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/customworldplugin.iml" filepath="$PROJECT_DIR$/.idea/modules/customworldplugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CustomCore.iml" filepath="$PROJECT_DIR$/.idea/modules/CustomCore.iml" />
     </modules>
   </component>
 </project>

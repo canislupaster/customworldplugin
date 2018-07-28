@@ -1,4 +1,4 @@
-package com.thomas.customworld.commands
+package com.thomas.customworld.commands.util
 
 import com.thomas.customworld.messaging._
 import com.thomas.customworld.player._
@@ -12,7 +12,7 @@ class BackCommand extends CommandExecutor {
         getPlayer(x).beforeTp match {
           case Some(loc) =>
             x.teleport(loc)
-            InfoMsg("tpto", Some("last location"))
+            InfoMsg(ConfigMsg("tpto"), RuntimeMsg("last location"))
           case None => ErrorMsg("noloc")
         }
       case _ => ErrorMsg("noconsole")

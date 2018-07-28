@@ -12,9 +12,11 @@ package object db {
       |CREATE TABLE IF NOT EXISTS player (
       |    playerid varchar(36) NOT NULL,
       |    rankid INTEGER NOT NULL DEFAULT 0,
+      |    nickname varchar(100),
       |    username TEXT NOT NULL,
       |    xp INTEGER NOT NULL DEFAULT 0,
       |    muted BOOL NOT NULL DEFAULT FALSE,
+      |    UNIQUE (nickname),
       |    PRIMARY KEY (playerid)
       |);
       |""", """
@@ -29,11 +31,31 @@ package object db {
       |    UNIQUE (playerid, homename)
       |);
       |
-    """) map (_.stripMargin)
+    """, """
+      |CREATE TABLE IF NOT EXISTS ip (
+      |    playerid varchar(36) NOT NULL,
+      |    ip int unsigned NOT NULL,
+      |    INDEX(ip),
+      |    UNIQUE (playerid, ip),
+      |    FOREIGN KEY (playerid) REFERENCES player(playerid)
+      |);
+    """, """
+      |CREATE TABLE IF NOT EXISTS ipban (
+      |    ip int unsigned NOT NULL,
+      |    reason text NOT NULL,
+      |    time datetime,
+      |    FOREIGN KEY (ip) REFERENCES ip(ip)
+      |);
+    """, """
+      |CREATE TABLE IF NOT EXISTS mute (
+      |    ip int unsigned NOT NULL,
+      |    reason text NOT NULL,
+      |    time datetime,
+      |    FOREIGN KEY (ip) REFERENCES ip(ip)
+      |);
+    """.stripMargin) map (_.stripMargin)
   }
 
-
-  //TODO: MUTES
   type DBConstructor = () => Connection
 
   def MakeDB (cfg: FileConfiguration): Connection = {

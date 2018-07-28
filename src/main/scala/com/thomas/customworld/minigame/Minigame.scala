@@ -4,10 +4,11 @@ import java.io.File
 import java.util
 import java.util.UUID
 
-import com.thomas.customworld.{SimpleScoreboard, freeop, player}
+import com.thomas.customworld.{freeop, player}
+import com.thomas.customworld
 import com.thomas.customworld.util._
 import org.bukkit.{ChatColor, GameMode, Location}
-import org.bukkit.entity.Player
+import org.bukkit.entity.{Entity, Player}
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
@@ -30,43 +31,43 @@ import org.bukkit.event.player.{PlayerEvent, PlayerItemDamageEvent, PlayerMoveEv
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
+import scala.reflect.ClassTag
 
-abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
+abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
   val minPlayers = 2
   val gameTime = 60
   var state:GameState = WaitingForPlayers ()
   val name = "MINIGAME"
 
-  case class MinigamePlayer (playing:Boolean, inventory: Array[ItemStack])
-  def defaultPlayer (inventory:Array[ItemStack]) = MinigamePlayer(playing = false, inventory)
-  var players: mutable.HashMap[UUID, MinigamePlayer] = mutable.HashMap[UUID, MinigamePlayer]()
+  def defaultPlayer (inventory:Array[ItemStack]): T
+  var players: mutable.HashMap[UUID, T] = mutable.HashMap()
 
   val dim: worldedit.Vector = CageSchematic.getClipboard.getDimensions.divide(2)
   val cageRegion = Box(region.bworld, WEVec(spawnLoc.toVector).subtract(dim).toBlockVector, WEVec(spawnLoc.toVector).add(dim).toBlockVector)
 
   initializeMap()
 
-  freeop.registerProtected(region) //TODO: EXPAND REGION
-
-  runTaskTimer(plugin, 20, 20)
+  freeop.registerProtected(region)
 
   def getPlayers: Array[Player] = players map {case (x,y) => plugin.getServer.getPlayer(x)} toArray
-  def getMinigamePlayers: Array[MinigamePlayer] = players map { case (_, y) => y } toArray
-  def mapPlayers (x: MinigamePlayer => MinigamePlayer) : Unit = players map { case (u:UUID, y:MinigamePlayer) => players(u)(x(y)) }
-  def mapPlayer (u: UUID, x: MinigamePlayer => Unit): Unit = players (u)(x(players(u)))
+  def getMinigamePlayers: Array[T] = (players map { case (_, y) => y }) toArray
+  def mapPlayers (x: T => Unit) : Unit = players foreach { case (_, y:T) => x(y) }
+  def mapPlayer (u: UUID, x: T => Unit): Unit = x(players(u))
   def doPlayers (x: Player => Unit): Unit = getPlayers foreach x
-  def doMinigamePlayers (x: Player => MinigamePlayer => Unit): Unit = players foreach {case (u,m) => x(plugin.getServer.getPlayer(u))(m)}
+  def doMinigamePlayers (x: Player => T => Unit): Unit = players foreach {case (u,m) => x(plugin.getServer.getPlayer(u))(m)}
 
   def renderScoreboard (): Unit = {
     val playersarr = getPlayers
-    val scoreboard = new SimpleScoreboard(name)
-    scoreboard.blankLine()
-    state.toString split "\\r?\\n" foreach scoreboard.add
-    scoreboard.blankLine()
-    scoreboard.add(ChatColor.RED+"Players:")
-    playersarr foreach (x => scoreboard.add(x.getDisplayName))
-    scoreboard.build()
-    scoreboard.send(playersarr)
+    if (!playersarr.isEmpty) {
+      new SimpleScoreboard(name)
+        .blank()
+        .addMultiple(state.toString split "\\r?\\n")
+        .blank()
+        .add(ChatColor.RED + "Players:")
+        .addMultiple(playersarr map (_.getName))
+        .build()
+        .send(playersarr)
+    }
   }
 
   def initializeMap(): Unit = {
@@ -76,7 +77,7 @@ abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc:
   def start (): Unit = {
     cageRegion fillBox 0
 
-    mapPlayers (_.copy(playing=true))
+    mapPlayers (_.playing=true)
   }
 
   def startCountdown(): Unit = { }
@@ -129,7 +130,7 @@ abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc:
   }
 
   def spectate (player: Player): Unit = {
-    mapPlayer (player.getUniqueId, _.copy (playing = false))
+    mapPlayer (player.getUniqueId, _.playing = false)
 
     player.setAllowFlight(true)
     player.setFlying(true)
@@ -138,29 +139,24 @@ abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc:
 
   def leave (leaveplayer: Player): Unit = {
     leaveplayer.getInventory.setContents(players(leaveplayer.getUniqueId).inventory)
-    players -= leaveplayer.getUniqueId
 
     leaveplayer.setScoreboard(plugin.getServer.getScoreboardManager.getNewScoreboard)
+
+    players -= leaveplayer.getUniqueId
+
     leaveplayer.teleport(signLoc)
-    player.joinFreeOP(leaveplayer)
   }
-
-
 
   def tryJoin (player: Player, loc:Location): Unit = {
     state match {
-      case _:WaitingForPlayers if loc==signLoc => join(player)
-      case _ => ()
+      case _:Playing => ()
+      case _ if loc==signLoc => join(player)
     }
   }
 
-  def tryLeave (player:Player): Unit = {
-    if (players contains player.getUniqueId) {
-      leave(player)
-    }
-  }
+  def tryLeave (player:Player): Unit = if (players contains player.getUniqueId) leave(player)
 
-  def playerInGame (player:Player): Boolean = {
+  def playerInGame (player:Entity): Boolean = {
     players contains player.getUniqueId
   }
 
@@ -174,9 +170,10 @@ abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc:
   def playerDamage(event: EntityDamageEvent, player: Player): Unit = { event.setCancelled(true) }
   def playerItemDamage(event: PlayerItemDamageEvent): Unit = { event.setCancelled(true) }
 
-  def blockBreak (event: BlockBreakEvent): Unit = {}
-  def blockPlace (event: BlockPlaceEvent): Unit = {}
+  def blockBreak (event: BlockBreakEvent): Unit = { event.setCancelled(true) }
+  def blockPlace (event: BlockPlaceEvent): Unit = { event.setCancelled(true) }
 
+  def tryOtherEv: Event => Unit = _ => ()
   def tryEv (event: Event): Unit = {
     event match {
       case e: PlayerEvent if playerInGame(e.getPlayer) =>
@@ -194,7 +191,7 @@ abstract class Minigame(plugin: Plugin, region:Box, spawnLoc: Location, signLoc:
       case e: BlockBreakEvent if playerInGame(e.getPlayer) => blockBreak(e)
       case e: BlockPlaceEvent if playerInGame(e.getPlayer)  => blockPlace(e)
 
-      case _ => ()
+      case _ => tryOtherEv(event)
     }
   }
 }

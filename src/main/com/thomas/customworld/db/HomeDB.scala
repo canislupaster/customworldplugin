@@ -1,13 +1,7 @@
 package com.thomas.customworld.db
 
-import java.sql.Connection
-import java.util.UUID
-
 import com.github.takezoe.scala.jdbc._
 import com.thomas.customworld.commands.home.Home
-import com.thomas.customworld.util._
-
-import scala.collection.JavaConverters._
 
 
 class HomeDB() extends MainDB() {

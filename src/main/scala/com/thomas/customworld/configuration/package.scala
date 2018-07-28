@@ -1,10 +1,7 @@
 package com.thomas.customworld
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable
-import org.bukkit.{Color, Material, OfflinePlayer}
-import org.bukkit.configuration.{Configuration, ConfigurationOptions, ConfigurationSection}
+import org.bukkit.Material
 import org.bukkit.entity.EntityType
-import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
 import scala.collection.JavaConverters
@@ -28,11 +25,51 @@ package object configuration {
       "lang.opped" -> "You have been opped!",
       "lang.noloc" -> "Location not found!",
       "lang.leavegame" -> "Leave the game first with /spawn",
+      "lang.hasexec" -> "has executed",
+      "lang.noreq" -> "No pending request!",
+      "lang.tooclose" -> "You are too close to a protected region!",
+      "lang.alreadyexists" -> "That already exists!",
+      "lang.unverified" -> "You must get your ip verified first! Perhaps ask staff on the discord ( https://discord.gg/sgMCMrY ).",
+      "lang.nobans" -> "There aren't any bans on that player!",
+      "lang.appeal" -> "Appeal on the discord: https://discord.gg/sgMCMrY",
+      "lang.muted" -> "You are muted!",
+      "lang.alreadymuted" -> "That player is already (un)muted!",
+      "lang.verified" -> "has been verified by",
+      "lang.imposter" -> "is an imposter!",
+      "lang.norankyourself" -> "You cannot rank yourself!",
+      "lang.norankhigher" -> "You cannot rank higher ups!",
+      "lang.norankhigherrank" -> "You cannot rank someone higher than you are ranked!",
+
+      "lang.help" ->
+        """
+          |Welcome to CustomWorld, a server where minigames, fun, and freeop come together.
+          |
+          |Here are some rules to brief over to keep our community nice and safe:
+          |1) No hacking or getting into other accounts.
+          |2) Griefing and trolling are strictly forbidden.
+          |3) Hacked clients are forbidden.
+          |4) Using alts to bypass bans or to increase power in statistics is strictly forbidden and all alts will get banned.
+          |5) Do not ask for staff, use #apply-for-staff instead.
+          |6) Do not insult staff members or other people.
+          |7) No racism, sexism or other similar things.
+          |8) Do not bully others.
+          |9) Be nice to others and use common sense.
+          |10) Be ethical.
+          |11) Be respectful.
+          |12) Do not spam in text channels.
+          |13) Do not use loud voice or high pitch voices and annoying ones at voice channels.
+          |14) Do not annoy others.
+          |15) Respect other's privacy.
+          |16) Do not advertise in any form.
+          |17) These rules can change at anytime. Breaking them might result in a punishment ((temp)mute/kick/(temp)ban).
+          |
+          |Those rules apply for everything related to CustomWorld (forums, Discord server ( https://discord.gg/sgMCMrY ), youtube comments and of server).
+        """.stripMargin,
 
       "minigame.world" -> "world",
       "minigame.spleef.template" -> "./spleef.schematic",
-      "minigame.spleef.minRegion" -> new Vector(-155, -2, -92),
-      "minigame.spleef.maxRegion" -> new Vector(-184, 15, -56),
+      "minigame.spleef.minRegion" -> new Vector(-155, -2, -56),
+      "minigame.spleef.maxRegion" -> new Vector(-184, 15, -92),
       "minigame.spleef.spawnPos" -> new Vector (-170, 10, -73),
       "minigame.spleef.signPos" -> new Vector(-169, 4, -55),
       "minigame.cage" -> "./cage.schematic",
@@ -43,12 +80,21 @@ package object configuration {
       "db.username" -> "root",
       "db.password" -> "mysql",
 
-      "permission.regular" -> List().asJava,
+      "permission.regular" -> List("talk").asJava,
       "permission.helper" -> List().asJava,
       "permission.builder" -> List("blocks", "spawnbuild").asJava,
       "permission.mod" -> List("tempban", "kick", "fawe.admin").asJava,
-      "permission.staff" -> List("setrank", "minecraft.command.gamemode", "minecraft.command.kick", "blocks", "ban").asJava,
-      "permission.staff+" -> List("noban", "hell", "config")
+      "permission.staff" -> List("setrank", "manageips", "minecraft.command.gamemode", "minecraft.command.kick", "blocks", "ban", "cmdspy").asJava,
+      "permission.staff+" -> List("noban", "hell", "config").asJava,
+
+      "world.overworld" -> "CustomWorld_overworld",
+      "world.flatlands" -> "CustomWorld",
+
+      "freeop.jumppad.force" -> 0.5,
+      "freeop.jumppad.on" -> true,
+
+      "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world").asJava,
+      "permission.muted" -> List("minecraft.command.me", "minecraft.command.tell", "talk").asJava
     ) mapValues (_.asInstanceOf[AnyRef])
     JavaConverters.mapAsJavaMap (map)
   }

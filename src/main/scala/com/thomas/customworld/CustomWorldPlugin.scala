@@ -1,17 +1,21 @@
 package com.thomas.customworld
 
 import org.bukkit.event.block.{BlockBreakEvent, BlockFadeEvent, BlockPlaceEvent}
-import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDamageEvent, FoodLevelChangeEvent, PlayerDeathEvent}
+import org.bukkit.event.entity._
 import org.bukkit.event.player.{PlayerTeleportEvent, _}
 import com.thomas.customworld.db.{DBConstructor, PlayerDB}
-import com.thomas.customworld.messaging.{PlayerJoinMessage, PlayerMessage}
-import com.thomas.customworld.rank.Rank
+import com.thomas.customworld.messaging.{ErrorMsg, PlayerJoinMessage, PlayerMessage}
+import com.thomas.customworld.player.ip
+import com.thomas.customworld.player.rank.Rank
 import org.bukkit
 import org.bukkit.block.Sign
 import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.{BanList, GameMode, Material, OfflinePlayer}
+import org.bukkit._
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
+import org.bukkit.event.vehicle.{VehicleDamageEvent, VehicleEnterEvent, VehicleExitEvent, VehicleMoveEvent}
+import com.thomas.customworld.util._
+import org.bukkit.event.player
 
 object CustomWorldPlugin {
   val plugin: CustomWorldPluginJava = CustomWorldPluginJava.get()
@@ -32,49 +36,58 @@ object CustomWorldPlugin {
     messaging.LoadConfig(cfg)
     minigame.InitializeMinigames(plugin)
     commands.RegisterCommands(plugin, dbcons)
+    freeop.initialize(plugin)
 
     plugin.getLogger.info("Successfully enabled and initialized database!")
+    plugin.getServer.getOnlinePlayers forEach (player.join(_))
   }
 
   def onDisable(): Unit = {
     plugin.getLogger.info("Disabling...")
+    minigame.stop()
   }
 
   def onLogin (event: PlayerLoginEvent): Unit = {
-    val db = new PlayerDB(dbcons())
+    val db = new PlayerDB()
 
-    db.UpdateUser(event.getPlayer.getUniqueId, event.getPlayer.getName)
+    db.updateUser(event.getPlayer.getUniqueId, event.getPlayer.getName)
 
-    if (event.getPlayer.isBanned && (db.getRank(event.getPlayer.getUniqueId) HasPermission "noban")) {
-      plugin.getServer.getBanList(BanList.Type.NAME).pardon(event.getPlayer.getName)
+    ip.login(event)
+    if ((event.getResult == PlayerLoginEvent.Result.KICK_BANNED)
+      && (db.getRank(event.getPlayer.getUniqueId) HasPermission "noban")) {
       event.allow()
     }
 
     db close()
   }
 
-  def CommandPreprocess(): Unit = {
-    //TODO: CMDSPY
+  def onPreCommand(event: PlayerCommandPreprocessEvent): Unit = {
+    messaging.CommandMessage(event.getPlayer.getName, event.getMessage).broadCast(x => x.hasPermission("cmdspy") && x != event.getPlayer)(plugin.getServer)
+    ip.ev(event)
   }
 
-  def GetTag (player: Player): Rank = {
-    new PlayerDB(dbcons()) autoClose(_ getRank player.getUniqueId)
-  }
+  def GetTag (tagplayer: Player): Rank = player.getPlayer(tagplayer).rank
 
   def onJoin (event: PlayerJoinEvent): Unit = {
-    rank.addPlayer(dbcons, event.getPlayer, plugin)
-    event.setJoinMessage(PlayerJoinMessage(join=true, GetTag(event.getPlayer), event.getPlayer.getDisplayName).renderMessage)
+    player.join(event.getPlayer)
+    event.getPlayer.teleport(event.getPlayer.getWorld.getSpawnLocation)
+    event.setJoinMessage(PlayerJoinMessage(join=true, GetTag(event.getPlayer), event.getPlayer.getName).renderMessage)
   }
 
   def onQuit (event: PlayerQuitEvent): Unit = {
-    rank.removePlayer(dbcons, event.getPlayer)
+    event.setQuitMessage(PlayerJoinMessage(join=false, GetTag(event.getPlayer), event.getPlayer.getName).renderMessage)
     minigame.leave(event.getPlayer)
-    event.setQuitMessage(PlayerJoinMessage(join=false, GetTag(event.getPlayer), event.getPlayer.getDisplayName).renderMessage)
+    player.leave(event.getPlayer)
   }
 
   def onChat (event: AsyncPlayerChatEvent): Unit = {
-    PlayerMessage(GetTag(event.getPlayer), event.getPlayer.getDisplayName, event.getMessage).broadCast(_ => true, plugin.getServer)
-    event.setCancelled(true)
+    if (event.getPlayer.hasPermission("talk")) {
+      event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage))
+      event.setFormat(PlayerMessage(GetTag(event.getPlayer), event.getPlayer).renderMessage)
+    } else {
+      ErrorMsg("muted") sendClient event.getPlayer
+      event.setCancelled(true)
+    }
   }
 
   def PreventInteraction (player:Player): Boolean = {
@@ -93,20 +106,30 @@ object CustomWorldPlugin {
         case _ => ()
       }
     }
+
+    freeop.ev(event)
+    minigame.ev(event)
+    ip.ev(event)
   }
 
   def onInteractEntity (event: PlayerInteractEntityEvent): Unit = {
     if (configuration.BlockedEntities contains event.getRightClicked.getType) {
       event.setCancelled(PreventInteraction(event.getPlayer))
     }
+
+    freeop.ev(event)
+    minigame.ev(event)
+    ip.ev(event)
   }
 
   def onBlockBreak (event: BlockBreakEvent): Unit = {
     minigame.ev(event)
+    freeop.ev(event)
   }
 
-  def onPlaceBlock (event: BlockPlaceEvent): Unit = { //TODO: add this to java
+  def onBlockPlace (event: BlockPlaceEvent): Unit = {
     minigame.ev(event)
+    freeop.ev(event)
   }
 
   def onAttack(event: EntityDamageByEntityEvent): Unit = {
@@ -118,10 +141,11 @@ object CustomWorldPlugin {
         }
       case _ => ()
     }
+    minigame.ev(event)
   }
 
   def onDamage(event: EntityDamageEvent): Unit = {
-    if (event.getCause == EntityDamageEvent.DamageCause.VOID) {
+    if (event.getCause == EntityDamageEvent.DamageCause.VOID && event.getEntity.isInstanceOf[Player]) {
       event.getEntity.setFallDistance(0)
       event.getEntity.teleport(event.getEntity.getWorld.getSpawnLocation)
       event.setCancelled(true)
@@ -135,19 +159,39 @@ object CustomWorldPlugin {
   }
 
   def onMove(event: PlayerMoveEvent): Unit = {
+    freeop.ev(event)
     minigame.ev(event)
+    ip.ev(event)
   }
 
   def onTp(event: PlayerTeleportEvent): Unit = {
+    player.getPlayer(event.getPlayer).beforeTp = Some(event.getFrom)
     minigame.ev(event)
+    ip.ev(event)
   }
 
   def onFoodLevelChange (event: FoodLevelChangeEvent): Unit = {
-    event.setFoodLevel(20) //TODO: TEST
     event.setCancelled(true)
+    event.setFoodLevel(20)
+    minigame.ev(event)
   }
 
   def onItemDamage (event: PlayerItemDamageEvent): Unit = {
     minigame.ev(event)
   }
+
+  def onExplosionPrime (event: ExplosionPrimeEvent): Unit = {
+    event.setCancelled(true)
+    minigame.ev(event)
+  }
+
+  def onVEnter (vehicleEnterEvent: VehicleEnterEvent): Unit = minigame.ev(vehicleEnterEvent)
+  def onVDamage (vehicleDamageEvent: VehicleDamageEvent): Unit = minigame.ev(vehicleDamageEvent)
+  def onVMove (vehicleMoveEvent: VehicleMoveEvent): Unit = {
+    freeop.ev(vehicleMoveEvent)
+    minigame.ev(vehicleMoveEvent)
+  }
+  def onVExit (vehicleExitEvent: VehicleExitEvent): Unit = minigame.ev(vehicleExitEvent)
+
+  //TODO: make all these event handlers a big pattern match
 }
