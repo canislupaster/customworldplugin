@@ -32,7 +32,8 @@ package object commands {
     plugin.getCommand("smite").setExecutor(new SmiteCommand())
 
     plugin.getCommand("help").setExecutor(new commands.HelpCommand())
-
+    plugin.getCommand("rules").setExecutor(new commands.RulesCommand())
+    
     plugin.getCommand("ban").setExecutor(new BanCommand())
     plugin.getCommand("tempban").setExecutor(new TempBanCommand())
     plugin.getCommand("unban").setExecutor(new UnbanCommand())
