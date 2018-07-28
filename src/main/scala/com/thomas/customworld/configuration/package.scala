@@ -42,6 +42,22 @@ package object configuration {
 
       "lang.help" ->
         """
+          |§e----- §aCustomWorld §e-----
+          |
+          |§aCustomWorld §eis FreeOP Minecraft server located in Europe.
+          |§eBefore you will start new journey, we recommend you to read §c/rules &efirst!
+          |§eThose rules apply for everything related to CustomWorld 
+          |(forums, Discord server (https://discord.gg/sgMCMrY), youtube comments and our server).
+          |
+          |§eYou can list avalibe commands (and usage) at our website under "Minecraft server" section:
+          |§bhttp://www.customworld.ml
+          |
+          |§eIf you need support from our staff, please visit our Discord as mentioned above.
+          |§eSincerely, §axCustomWorld§e, owner of §aCustomWorld§e.
+        """.stripMargin,
+
+      "lang.rules" ->
+        """
           |Welcome to CustomWorld, a server where minigames, fun, and freeop come together.
           |
           |Here are some rules to brief over to keep our community nice and safe:
@@ -65,7 +81,7 @@ package object configuration {
           |
           |Those rules apply for everything related to CustomWorld (forums, Discord server ( https://discord.gg/sgMCMrY ), youtube comments and of server).
         """.stripMargin,
-
+      
       "minigame.world" -> "world",
       "minigame.spleef.template" -> "./spleef.schematic",
       "minigame.spleef.minRegion" -> new Vector(-155, -2, -56),
