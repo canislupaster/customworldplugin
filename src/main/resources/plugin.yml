@@ -95,9 +95,13 @@ commands:
     aliases: []
     usage: /smite [player]
   help:
-    description: Shows the rules
-    aliases: []
+    description: Shows the server help
+    aliases: /bukkit:help, /?, /bukkit:?, /minecraft:help, /minecraft:?
     usage: /help
+  rules:
+    description: Shows you server rules
+    aliases: []
+    usage: /rules
   tempban:
     description: Temporary ip ban
     aliases: []
