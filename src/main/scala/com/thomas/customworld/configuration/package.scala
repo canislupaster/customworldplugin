@@ -108,6 +108,7 @@ package object configuration {
 
       "freeop.jumppad.force" -> 0.5,
       "freeop.jumppad.on" -> true,
+      "freeop.explosions" -> true,
 
       "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world").asJava,
       "permission.muted" -> List("minecraft.command.me", "minecraft.command.tell", "talk").asJava

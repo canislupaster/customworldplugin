@@ -134,6 +134,12 @@
             </plugin>
 
             <plugin>
+                <groupId>org.ensime.maven.plugins</groupId>
+                <artifactId>ensime-maven</artifactId>
+                <version>1.2.0</version>
+            </plugin>
+
+            <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>3.4.2</version>

@@ -28,7 +28,7 @@ object CustomWorldPlugin {
     plugin.saveConfig()
 
     val opendb = dbcons()
-    var statement = opendb.createStatement()
+    val statement = opendb.createStatement()
     db.InitializeDB foreach (statement.addBatch(_))
     statement.executeBatch()
     opendb.close()
@@ -181,7 +181,8 @@ object CustomWorldPlugin {
   }
 
   def onExplosionPrime (event: ExplosionPrimeEvent): Unit = {
-    event.setCancelled(true)
+    if (!cfg.getBoolean("freeop.explosions"))
+      event.setCancelled(true)
     minigame.ev(event)
   }
 

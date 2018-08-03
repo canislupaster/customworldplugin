@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_customcore" default="compile.module.customcore">
+  <dirname property="module.customcore.basedir" file="${ant.file.module_customcore}"/>
+  
+  <property name="module.jdk.home.customcore" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.customcore" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.customcore" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.customcore" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="customcore.output.dir" value="${module.customcore.basedir}/../../target/classes"/>
+  <property name="customcore.testoutput.dir" value="${module.customcore.basedir}/../../target/test-classes"/>
+  
+  <path id="customcore.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="customcore.module.production.classpath">
+    <path refid="${module.jdk.classpath.customcore}"/>
+    <path refid="library.scala-sdk-2.12.6.classpath"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.12.2-r0.1-snapshot.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.6.classpath"/>
+    <path refid="library.maven:_com.googlecode.json-simple:json-simple:1.1.1.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:21.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.8.0.classpath"/>
+    <path refid="library.maven:_org.yaml:snakeyaml:1.19.classpath"/>
+    <path refid="library.maven:_net.md-5:bungeecord-chat:1.12-snapshot.classpath"/>
+    <path refid="library.maven:_com.boydti:fawe-api:latest.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.11.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldedit:worldedit-core:6.1.3-snapshot.classpath"/>
+    <path refid="library.maven:_de.schlichtherle:truezip:6.8.3.classpath"/>
+    <path refid="library.maven:_rhino:js:1.7r2.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.thoughtworks.paranamer:paranamer:2.6.classpath"/>
+    <path refid="library.maven:_com.sk89q.lib:jlibnoise:1.0.0.classpath"/>
+    <path refid="library.maven:_com.sk89q:jchronic:0.2.4a.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldguard:worldguard-legacy:version.classpath"/>
+    <path refid="library.maven:_com.github.takezoe:scala-jdbc_2.12:1.0.5.classpath"/>
+    <path refid="library.maven:_com.github.jsqlparser:jsqlparser:0.9.6.classpath"/>
+    <path refid="library.maven:_org.scalamacros:resetallattrs_2.12:1.0.0.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-reflect:2.12.1.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-library:2.12.6.classpath"/>
+    <path refid="library.maven:_org.scalactic:scalactic_2.12:3.0.5.classpath"/>
+  </path>
+  
+  <path id="customcore.runtime.production.module.classpath">
+    <pathelement location="${customcore.output.dir}"/>
+    <path refid="library.scala-sdk-2.12.6.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:21.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.8.0.classpath"/>
+    <path refid="library.maven:_org.yaml:snakeyaml:1.19.classpath"/>
+    <path refid="library.maven:_com.boydti:fawe-api:latest.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.11.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.6.0.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldedit:worldedit-core:6.1.3-snapshot.classpath"/>
+    <path refid="library.maven:_de.schlichtherle:truezip:6.8.3.classpath"/>
+    <path refid="library.maven:_rhino:js:1.7r2.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.thoughtworks.paranamer:paranamer:2.6.classpath"/>
+    <path refid="library.maven:_com.sk89q.lib:jlibnoise:1.0.0.classpath"/>
+    <path refid="library.maven:_com.sk89q:jchronic:0.2.4a.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldguard:worldguard-legacy:version.classpath"/>
+    <path refid="library.maven:_com.github.takezoe:scala-jdbc_2.12:1.0.5.classpath"/>
+    <path refid="library.maven:_com.github.jsqlparser:jsqlparser:0.9.6.classpath"/>
+    <path refid="library.maven:_org.scalamacros:resetallattrs_2.12:1.0.0.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-reflect:2.12.1.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-library:2.12.6.classpath"/>
+    <path refid="library.maven:_org.scalactic:scalactic_2.12:3.0.5.classpath"/>
+  </path>
+  
+  <path id="customcore.module.classpath">
+    <path refid="${module.jdk.classpath.customcore}"/>
+    <pathelement location="${customcore.output.dir}"/>
+    <path refid="library.scala-sdk-2.12.6.classpath"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.12.2-r0.1-snapshot.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.6.classpath"/>
+    <path refid="library.maven:_com.googlecode.json-simple:json-simple:1.1.1.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:21.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.8.0.classpath"/>
+    <path refid="library.maven:_org.yaml:snakeyaml:1.19.classpath"/>
+    <path refid="library.maven:_net.md-5:bungeecord-chat:1.12-snapshot.classpath"/>
+    <path refid="library.maven:_com.boydti:fawe-api:latest.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.11.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.6.0.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldedit:worldedit-core:6.1.3-snapshot.classpath"/>
+    <path refid="library.maven:_de.schlichtherle:truezip:6.8.3.classpath"/>
+    <path refid="library.maven:_rhino:js:1.7r2.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.thoughtworks.paranamer:paranamer:2.6.classpath"/>
+    <path refid="library.maven:_com.sk89q.lib:jlibnoise:1.0.0.classpath"/>
+    <path refid="library.maven:_com.sk89q:jchronic:0.2.4a.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldguard:worldguard-legacy:version.classpath"/>
+    <path refid="library.maven:_com.github.takezoe:scala-jdbc_2.12:1.0.5.classpath"/>
+    <path refid="library.maven:_com.github.jsqlparser:jsqlparser:0.9.6.classpath"/>
+    <path refid="library.maven:_org.scalamacros:resetallattrs_2.12:1.0.0.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-reflect:2.12.1.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-library:2.12.6.classpath"/>
+    <path refid="library.maven:_junit:junit:4.8.1.classpath"/>
+    <path refid="library.maven:_org.scalactic:scalactic_2.12:3.0.5.classpath"/>
+    <path refid="library.maven:_org.scalatest:scalatest_2.12:3.0.5.classpath"/>
+    <path refid="library.maven:_org.scala-lang.modules:scala-xml_2.12:1.0.6.classpath"/>
+  </path>
+  
+  <path id="customcore.runtime.module.classpath">
+    <pathelement location="${customcore.testoutput.dir}"/>
+    <pathelement location="${customcore.output.dir}"/>
+    <path refid="library.scala-sdk-2.12.6.classpath"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.12.2-r0.1-snapshot.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.6.classpath"/>
+    <path refid="library.maven:_com.googlecode.json-simple:json-simple:1.1.1.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:21.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.8.0.classpath"/>
+    <path refid="library.maven:_org.yaml:snakeyaml:1.19.classpath"/>
+    <path refid="library.maven:_net.md-5:bungeecord-chat:1.12-snapshot.classpath"/>
+    <path refid="library.maven:_com.boydti:fawe-api:latest.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.11.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.6.0.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldedit:worldedit-core:6.1.3-snapshot.classpath"/>
+    <path refid="library.maven:_de.schlichtherle:truezip:6.8.3.classpath"/>
+    <path refid="library.maven:_rhino:js:1.7r2.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.thoughtworks.paranamer:paranamer:2.6.classpath"/>
+    <path refid="library.maven:_com.sk89q.lib:jlibnoise:1.0.0.classpath"/>
+    <path refid="library.maven:_com.sk89q:jchronic:0.2.4a.classpath"/>
+    <path refid="library.maven:_com.sk89q.worldguard:worldguard-legacy:version.classpath"/>
+    <path refid="library.maven:_com.github.takezoe:scala-jdbc_2.12:1.0.5.classpath"/>
+    <path refid="library.maven:_com.github.jsqlparser:jsqlparser:0.9.6.classpath"/>
+    <path refid="library.maven:_org.scalamacros:resetallattrs_2.12:1.0.0.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-reflect:2.12.1.classpath"/>
+    <path refid="library.maven:_org.scala-lang:scala-library:2.12.6.classpath"/>
+    <path refid="library.maven:_junit:junit:4.8.1.classpath"/>
+    <path refid="library.maven:_org.scalactic:scalactic_2.12:3.0.5.classpath"/>
+    <path refid="library.maven:_org.scalatest:scalatest_2.12:3.0.5.classpath"/>
+    <path refid="library.maven:_org.scala-lang.modules:scala-xml_2.12:1.0.6.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.customcore">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.customcore">
+    <patternset refid="excluded.from.module.customcore"/>
+  </patternset>
+  
+  <path id="customcore.module.sourcepath">
+    <dirset dir="${module.customcore.basedir}/../../../customworldplugin">
+      <include name="src/main/java"/>
+      <include name="src/main/scala"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.customcore" depends="compile.module.customcore.production,compile.module.customcore.tests" description="Compile module CustomCore"/>
+  
+  <target name="compile.module.customcore.production" depends="register.custom.compilers" description="Compile module CustomCore; production classes">
+    <mkdir dir="${customcore.output.dir}"/>
+    <javac2 destdir="${customcore.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.customcore}/javac">
+      <compilerarg line="${compiler.args.customcore}"/>
+      <bootclasspath refid="customcore.module.bootclasspath"/>
+      <classpath refid="customcore.module.production.classpath"/>
+      <src refid="customcore.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.customcore"/>
+    </javac2>
+    
+    <copy todir="${customcore.output.dir}">
+      <fileset dir="${module.customcore.basedir}/../../src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.customcore.basedir}/../../src/main/scala">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.customcore.basedir}/../../src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.customcore.tests" depends="register.custom.compilers,compile.module.customcore.production" description="compile module CustomCore; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.customcore" description="cleanup module">
+    <delete dir="${customcore.output.dir}"/>
+    <delete dir="${customcore.testoutput.dir}"/>
+  </target>
+</project>
