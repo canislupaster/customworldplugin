@@ -1,10 +1,10 @@
-name: CustomWorldPlugin
-version: 0.1
-main: com.thomas.customworld.CustomWorldPluginJava
+name: CustomCore
+version: 0.2
+main: com.thomas.customworld.CustomCoreJava
 description: CustomWorld's main plugin.
 authors: [Thomas Marlowe]
-website: http://example.com
-depend: [FastAsyncWorldEdit, WorldEdit, CoreProtect]
+website: https://github.com/Thomas-QM/customworldplugin
+depend: [FastAsyncWorldEdit, WorldEdit]
 softdepend: []
 loadbefore: []
 permissions:
@@ -44,6 +44,16 @@ permissions:
     description: Configure jumppads
   talk:
     description: Allows a player to chat
+  heal:
+    description: Lets a player heal himself
+  home:
+    description: Manage and teleport to homes
+  spawn:
+    description: Teleport to spawn
+  build:
+    description: Manage, find, and create builds
+  theme:
+    description: Manage themes
 
 commands:
   rank:
@@ -77,7 +87,7 @@ commands:
   world:
     description: Switches your world
     aliases: []
-    usage: /world overworld|flatlands
+    usage: /world overworld|flatlands|competition
   verify:
     description: Verifies an ip.
     aliases: []
@@ -93,7 +103,7 @@ commands:
   smite:
     description: Smites a player
     aliases: []
-    usage: /smite [player]
+    usage: /smite [player] [reason]
   help:
     description: Shows the server help
     aliases: /bukkit:help, /?, /bukkit:?, /minecraft:help, /minecraft:?
@@ -117,11 +127,11 @@ commands:
   mute:
     description: Mutes a player
     aliases: []
-    usage: /mute [player] [length]
+    usage: /mute [player] [length] [reason]
   unmute:
     description: Unmutes a player
     aliases: []
-    usage: /unmute [player] [reason]
+    usage: /unmute [player]
   kick:
     description: Kicks a player
     aliases: []
@@ -130,3 +140,23 @@ commands:
     description: Configure jumppads
     aliases: []
     usage: /jumppad on|off strength
+  build:
+    description: Find themes and builds
+    aliases: []
+    usage: /build list [player|theme] | themes | in | tp [player] [build]
+  makebuild:
+    description: Make a build
+    aliases: []
+    usage: /makebuild [theme] name
+  delbuild:
+    description: Delete one of your builds
+    aliases: []
+    usage: /delbuild name
+  maketheme:
+    description: Makes a new theme
+    aliases: []
+    usage: /maketheme start end name
+  vote:
+    description: Vote for a build
+    aliases: []
+    usage: /vote [player] [buildname]

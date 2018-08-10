@@ -1,35 +1,23 @@
-package com.thomas.customworld.commands.home
+package scala.com.thomas.customworld.commands.home
 
-import com.thomas.customworld.db.{DBConstructor, HomeDB}
-import com.thomas.customworld.messaging._
-import org.bukkit.Location
+import scala.com.thomas.customworld.commands.base.CommandPart
+import scala.com.thomas.customworld.commands.base.{PermissionCommand, PlayerCommand}
+import scala.com.thomas.customworld.db.{DBConstructor, HomeDB}
+import scala.com.thomas.customworld.messaging._
+import scala.com.thomas.customworld.util._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
-import com.thomas.customworld.util._
 
-case class Home(Name: String, World: String, X: Int, Y: Int, Z: Int)
-class HomeCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
+class HomeCommand(operation: (Player, String, HomeDB) => Message) extends PlayerCommand("home") {
+  override def commandPart:CommandPart = (sender, _, _, args) => {
     val db = new HomeDB()
+    val player = sender.asInstanceOf[Player]
 
-    sender match {
-      case x:Player =>
-        db.GetHomes(x.getUniqueId) filter {case Home(str,_,_,_,_) => str.toLowerCase.startsWith(spaceJoin(args.toList).toLowerCase)} match {
-          case Array(home:Home) =>
-            x.teleport(new Location(x.getServer.getWorld(toUUID(home.World)), home.X, home.Y, home.Z), TeleportCause.PLUGIN)
-            HomeMessage(Some("tpto"), home) sendClient sender
-          case Array() =>
-            ErrorMsg("nohomes") sendClient sender
-          case homes =>
-            InfoMsg (ConfigMsg("homes")) sendClient sender
-            homes foreach (HomeMessage(None, _) sendClient sender)
-        }
+    val homename = if (args.nonEmpty) spaceJoin(args.toList) else "home"
 
-      case _ =>
-        ErrorMsg ("noconsole") sendClient sender
-    }
+    val msg = operation(player, homename, db)
+    db close()
 
-    true
+    SomeArr(msg)
   }
 }

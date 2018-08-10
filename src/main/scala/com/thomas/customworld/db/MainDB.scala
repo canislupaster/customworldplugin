@@ -1,13 +1,13 @@
-package com.thomas.customworld.db
+package scala.com.thomas.customworld.db
 
 import java.sql.Connection
 import java.util.UUID
 
 import com.github.takezoe.scala.jdbc.DB
-import com.thomas.customworld.CustomWorldPlugin
+import scala.com.thomas.customworld.CustomCore
 
 class MainDB () {
-  val data = DB (CustomWorldPlugin.dbcons())
+  val data = DB (CustomCore.dbcons())
 
   def close(): Unit = {
     data.close()

@@ -1,7 +1,7 @@
-package com.thomas.customworld.commands.util
+package scala.com.thomas.customworld.commands.util
 
-import com.thomas.customworld.messaging._
-import com.thomas.customworld.player._
+import scala.com.thomas.customworld.messaging._
+import scala.com.thomas.customworld.player._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 

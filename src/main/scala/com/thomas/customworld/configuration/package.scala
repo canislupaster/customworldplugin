@@ -1,6 +1,7 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
 import org.bukkit.Material
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 
@@ -16,6 +17,10 @@ package object configuration {
       "lang.noplayer" -> "Player not found!",
       "lang.nohome" -> "Home not found!",
       "lang.nohomes" -> "No homes found!",
+      "lang.nobuilds" -> "No builds found!",
+      "lang.nobuild" -> "No build found!",
+      "lang.nothemes" -> "No themes found!",
+      "lang.alreadyvoted" -> "You have already voted!",
       "lang.manyhomes" -> "You have too many homes!",
       "lang.prefix" -> "§aCustomWorld §l>>",
       "lang.homes" -> "Available homes:",
@@ -39,6 +44,14 @@ package object configuration {
       "lang.norankyourself" -> "You cannot rank yourself!",
       "lang.norankhigher" -> "You cannot rank higher ups!",
       "lang.norankhigherrank" -> "You cannot rank someone higher than you are ranked!",
+      "lang.noperms" -> "You don't have permission to do this!",
+      "lang.noselection" -> "You do not have a worldedit selection!",
+      "lang.sellarge" -> "Your selection is too large!",
+      "lang.noname" -> "You must give a name",
+      "lang.page" -> "Page",
+      "lang.in" -> "You are in",
+      "lang.io" -> "An IO exception occurred, check console.",
+      "lang.loading" -> "Please wait...",
 
       "lang.help" ->
         """
@@ -96,26 +109,33 @@ package object configuration {
       "db.username" -> "root",
       "db.password" -> "mysql",
 
-      "permission.regular" -> List("talk").asJava,
+      "permission.regular" -> List("talk", "spawn", "fawe.CustomCore").asJava,
       "permission.helper" -> List().asJava,
       "permission.builder" -> List("blocks", "spawnbuild").asJava,
       "permission.mod" -> List("tempban", "kick", "fawe.admin").asJava,
       "permission.staff" -> List("setrank", "manageips", "minecraft.command.gamemode", "minecraft.command.kick", "blocks", "ban", "cmdspy").asJava,
       "permission.staff+" -> List("noban", "hell", "config").asJava,
 
-      "world.overworld" -> "CustomWorld_overworld",
-      "world.flatlands" -> "CustomWorld",
+      "world.overworld" -> "world_nether", //nether for overworld on debug env
+      "world.flatlands" -> "world",
+      "world.competition" -> "world_end",
+      "world.default" -> "world",
 
       "freeop.jumppad.force" -> 0.5,
       "freeop.jumppad.on" -> true,
       "freeop.explosions" -> true,
+      "freeop.buildlimit" -> 2000,
 
-      "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world").asJava,
+      "discord.token" -> "NDc0ODc3Mzk4Mjc4NDcxNjgw.Dk6TEQ.RaX37LjRPVuKzibYH-dNRY-TH3Q",
+
+      "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world", "build").asJava,
       "permission.muted" -> List("minecraft.command.me", "minecraft.command.tell", "talk").asJava
     ) mapValues (_.asInstanceOf[AnyRef])
     JavaConverters.mapAsJavaMap (map)
   }
 
-  val BlockedBlocks = List(Material.TNT, Material.COMMAND, Material.COMMAND_CHAIN, Material.COMMAND_MINECART, Material.COMMAND_REPEATING, Material.COMMAND_CHAIN, Material.STRUCTURE_BLOCK)
+  val BlockedBlocks = List(Material.COMMAND, Material.COMMAND_CHAIN, Material.COMMAND_MINECART, Material.COMMAND_REPEATING, Material.COMMAND_CHAIN, Material.STRUCTURE_BLOCK)
   val BlockedEntities = List(EntityType.MINECART_COMMAND, EntityType.MINECART_TNT)
+
+  val cfg: FileConfiguration = CustomCore.cfg
 }

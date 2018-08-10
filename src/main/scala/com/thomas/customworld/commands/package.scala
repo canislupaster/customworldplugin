@@ -1,29 +1,34 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
-import com.thomas.customworld.commands.home.{DelHomeCommand, HomeCommand, SetHomeCommand}
-import com.thomas.customworld.commands.mod.ip.{ClearIpsCommand, VerifyIpCommand}
-import com.thomas.customworld.commands.mod.ban.{BanCommand, TempBanCommand, UnbanCommand}
-import com.thomas.customworld.commands.mod.mute.MuteCommand
-import com.thomas.customworld.commands.mod.{JumppadCommand, KickCommand, RankCommand, SmiteCommand}
-import com.thomas.customworld.commands.util._
-import com.thomas.customworld.db.{DBConstructor, PlayerDB}
+import com.thomas.customworld.CustomCoreJava
+
+import scala.com.thomas.customworld.commands.home.{DelHomeCommand, HomeTpCommand, SetHomeCommand}
+import scala.com.thomas.customworld.commands.mod.ip.{ClearIpsCommand, VerifyIpCommand}
+import scala.com.thomas.customworld.commands.mod.ban.{BanCommand, TempBanCommand, UnbanCommand}
+import scala.com.thomas.customworld.commands.mod.mute.MuteCommand
+import scala.com.thomas.customworld.commands.mod.{JumppadCommand, KickCommand, RankCommand, SmiteCommand}
+import scala.com.thomas.customworld.commands.util._
+import scala.com.thomas.customworld.db.{DBConstructor, PlayerDB}
+import scala.com.thomas.customworld.messaging.Message
+import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.command.defaults.HelpCommand
 
-package object commands {
+import scala.com.thomas.customworld.commands.build._
 
-  def RegisterCommands (plugin: CustomWorldPluginJava, sqldb: DBConstructor): Unit = {
+package object commands {
+  def RegisterCommands (plugin: CustomCoreJava, sqldb: DBConstructor): Unit = {
     val cfg = plugin.getConfig
 
     plugin.getCommand("rank").setExecutor(new RankCommand())
 
-    plugin.getCommand("home").setExecutor(new HomeCommand())
+    plugin.getCommand("home").setExecutor(new HomeTpCommand())
     plugin.getCommand("sethome").setExecutor(new SetHomeCommand())
     plugin.getCommand("delhome").setExecutor(new DelHomeCommand())
 
-    plugin.getCommand("spawn").setExecutor(new SpawnCommand())
+    plugin.getCommand("spawn").setExecutor(new SpawnCommand(cfg))
     plugin.getCommand("heal").setExecutor(new HealCommand())
     plugin.getCommand("back").setExecutor(new BackCommand())
-    plugin.getCommand("world").setExecutor(new WorldCommand(cfg.getString("world.overworld"), cfg.getString("world.flatlands")))
+    plugin.getCommand("world").setExecutor(new WorldCommand(cfg))
     plugin.getCommand("nick").setExecutor(new NickCommand())
 
     plugin.getCommand("verify").setExecutor(new VerifyIpCommand())
@@ -42,7 +47,13 @@ package object commands {
     plugin.getCommand("mute").setExecutor(new MuteCommand(true))
     plugin.getCommand("unmute").setExecutor(new MuteCommand(false))
 
-    plugin.getCommand("jumppad").setExecutor(new JumppadCommand(plugin.getConfig))
+    plugin.getCommand("jumppad").setExecutor(new JumppadCommand(cfg))
+
+    plugin.getCommand("build").setExecutor(new BuildCommand())
+    plugin.getCommand("makebuild").setExecutor(new MakeBuildCommand(cfg))
+    plugin.getCommand("delbuild").setExecutor(new DelBuildCommand())
+    plugin.getCommand("maketheme").setExecutor(new MakeThemeCommand())
+    plugin.getCommand("vote").setExecutor(new VoteCommand())
     //TODO: SPEED
   }
 }

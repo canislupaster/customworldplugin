@@ -1,11 +1,11 @@
-package com.thomas.customworld.commands.mod
+package scala.com.thomas.customworld.commands.mod
 
-import com.thomas.customworld.db.{DBConstructor, MuteDB}
-import com.thomas.customworld.messaging.{ErrorMsg, PunishMsg, SuccessMsg}
-import com.thomas.customworld.player
+import scala.com.thomas.customworld.db.{DBConstructor, MuteDB}
+import scala.com.thomas.customworld.messaging.{ErrorMsg, PunishMsg, SuccessMsg}
+import scala.com.thomas.customworld.player
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.util._
 
 class KickCommand extends CommandExecutor {
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {

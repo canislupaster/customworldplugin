@@ -1,7 +1,7 @@
-package com.thomas.customworld.commands.mod
+package scala.com.thomas.customworld.commands.mod
 
-import com.thomas.customworld.CustomWorldPlugin
-import com.thomas.customworld.db.DBConstructor
+import scala.com.thomas.customworld.CustomCore
+import scala.com.thomas.customworld.db.DBConstructor
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 
 class MinigameCommand extends CommandExecutor {

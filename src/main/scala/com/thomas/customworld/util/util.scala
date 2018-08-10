@@ -1,20 +1,28 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
 import java.sql.Timestamp
+import java.util
 import java.util.{Calendar, UUID}
 import java.util.regex.Pattern
 
+import com.boydti.fawe.FaweAPI
+import com.boydti.fawe.`object`.FawePlayer
 import com.boydti.fawe.`object`.schematic.Schematic
 import com.boydti.fawe.util.EditSessionBuilder
+import com.github.takezoe.scala.jdbc._
 import com.sk89q.worldedit
 import com.sk89q.worldedit.blocks.BaseBlock
+import com.sk89q.worldedit.extension.platform.Platform
+import com.sk89q.worldedit.internal.ServerInterfaceAdapter
 import com.sk89q.worldedit.regions.{CuboidRegion, Region}
+import org.bukkit.entity.Player
 import org.bukkit.util.BlockVector
 import org.bukkit.util.Vector
-import org.bukkit.{Location, World}
+import org.bukkit.{Location, World, WorldCreator}
 
 import scala.collection.LinearSeq
 import scala.language.implicitConversions
+import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
 package object util {
@@ -23,11 +31,23 @@ package object util {
     '"' + replaced + '"'
   }
 
+  def SomeArr[A:ClassTag](x:A) = Some(Array(x))
+  def Now() = new Timestamp(new java.util.Date().getTime)
   def WEVec(x: Vector) = new worldedit.Vector(x.getBlockX, x.getBlockY, x.getBlockZ)
 
-  case class Box (bworld:World, min:worldedit.BlockVector, max:worldedit.BlockVector) extends CuboidRegion(min, max) {
+  case class Paginator (page:Int, limit:Int) {
+    def from: Int = (page-1)*limit
+    def to: Int = page*limit
+  }
+
+  case class Box (bworld: World, min:worldedit.BlockVector, max:worldedit.BlockVector) extends CuboidRegion(FaweAPI.getWorld(bworld.getName), min, max) {
     def hasLoc (x:Location): Boolean = {
       this.contains (WEVec (x.toVector))
+    }
+
+    def intersectXZ(box2:Box): Boolean = {
+      val (x,y,a,b,x1,y1,a1,b1) = (min.getBlockX, min.getBlockZ, max.getBlockX, max.getBlockZ, box2.min.getBlockX, box2.min.getBlockZ, box2.max.getBlockX, box2.max.getBlockZ)
+      !(a<x1 || a1<x || b<y1 || b1<y) // credit goes to stackoverflow: https://stackoverflow.com/questions/13390333/two-rectangles-intersection
     }
 
     def this(world:World, min:Vector, max:Vector) {
@@ -71,13 +91,18 @@ package object util {
       this.copy(min=min.subtract(x,x,x).toBlockVector, max=max.add(x,x,x).toBlockVector)
     }
 
-    def hasXZ (x:Int,z:Int): Boolean = this.contains(new worldedit.Vector(x,min.getY+1,z))
+    def expand(x:Vector): Box = {
+      this.copy(min=min.subtract(x.getBlockX,x.getBlockY,x.getBlockZ).toBlockVector, max=max.add(x.getBlockX,x.getBlockY,x.getBlockZ).toBlockVector)
+    }
+
+    def hasXZ (x:Int,z:Int): Boolean = {
+      x >= min.getBlockX && x <= max.getBlockX && z >= min.getBlockZ && z <= max.getBlockZ
+    }
   }
 
-  implicit def fromUUID (x:UUID): String = x.toString
-  implicit def toUUID (x:String): UUID = UUID.fromString(x)
-  implicit def fromBool (x:Boolean): Int = if (x) 1 else 0
-  implicit def toBool (x:Int): Boolean = if (x>0) true else false
+  def fromBool (x:Boolean): Int = if (x) 1 else 0
+  def toBool (x:Int): Boolean = if (x>0) true else false
+  def fromOption: Option[String] => String = {case None => "NULL"; case Some(x) => x}
 
   def spaceJoin(x:List[String]): String = {
     if (x.nonEmpty) x reduce[String] { case (y, z) => s"$y $z" }
@@ -123,5 +148,17 @@ package object util {
           Some(new Timestamp(date.getTime.getTime))
       }
     }
+  }
+
+  case class UUID (x:String) {
+    def UUID: java.util.UUID = java.util.UUID.fromString(x)
+  }
+
+  implicit def toUUID (x:java.util.UUID): UUID = {
+    UUID(x.toString)
+  }
+
+  def getSelection (player:Player): Option[Region] = {
+    Option(FawePlayer.wrap(player).getSelection)
   }
 }

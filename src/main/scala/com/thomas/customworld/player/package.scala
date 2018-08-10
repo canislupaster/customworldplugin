@@ -1,27 +1,48 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
 import java.time.OffsetTime
-import java.util.{Calendar, Date, UUID}
+import java.util.{Calendar, Date}
 
-import com.thomas.customworld.db.{DBConstructor, PlayerDB}
+import scala.com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import org.bukkit.{GameMode, Location}
 import org.bukkit.entity.Player
+import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.plugin.Plugin
-import com.thomas.customworld.CustomWorldPlugin._
-import com.thomas.customworld.messaging.{ConfigMsg, InfoMsg}
-import com.thomas.customworld.player.rank.{Muted, Rank, Regular}
-import com.thomas.customworld.util._
+
+import scala.com.thomas.customworld.CustomCore._
+import scala.com.thomas.customworld.player.freeop.FreeOPPlayer
+import scala.com.thomas.customworld.messaging.{ConfigMsg, ErrorMsg, InfoMsg}
+import scala.com.thomas.customworld.minigame.{Minigame, MinigamePlayerData}
+import scala.com.thomas.customworld.player.rank.{Muted, Rank, Regular}
+import scala.com.thomas.customworld.util._
+import org.bukkit.event.{Cancellable, Event}
 
 import scala.collection.mutable
+import scala.com.thomas.customworld.EventModule
 
 package object player {
-  trait PlayerType {def extraPerms:Set[String] = Set()}
-  case object FreeOPPlayer extends PlayerType {
-    override def extraPerms: Set[String] = rank.rankCfg("freeop")
+  case class CustomPlayer(playerid:UUID, username:String, rank:Rank, nickname:Option[String])
+
+  trait PlayerType extends EventModule {def extraPerms:Set[String] = Set();}
+  case class MinigamePlayer[A <: MinigamePlayerData](minigame:Minigame[A]) extends PlayerType {
+    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = minigame.playerEv(event, player)
+
+    override def join(player: Player): Unit = minigame.join(player)
+    override def leave(player: Player): Unit = minigame.leave(player)
   }
-  case object MinigamePlayer extends PlayerType
+
+  case object UnverifiedPlayer extends PlayerType {
+    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+      event match {
+        case _:AsyncPlayerChatEvent => ()
+        case _ => event.setCancelled(true)
+      }
+    }
+  }
+
+  case object SurvivalPlayer extends PlayerType
 
   trait TpMode
   case object TpFrom
@@ -30,72 +51,62 @@ package object player {
 
   case class CustomWorldPlayer (rankcons: Rank, permissionAttachment: PermissionAttachment) {
     var rank: Rank = Regular
-    var playerPerms:PlayerType = FreeOPPlayer
+    var playerPerms:PlayerType = UnverifiedPlayer
 
-    var verified = false
     var beforeTp: Option[Location] = None
     var tpaRequest: Option[TpRequest] = None
 
-    def verify (): Unit = {
+    def verify (player:Player): Unit = {
+      joinFreeOP(player)
       updateRank(rankcons)
-      verified = true
     }
 
-    def updatePermissions (newp: PlayerType): Unit = {
-      playerPerms.extraPerms foreach permissionAttachment.unsetPermission
+    def updatePermissions (player:Player, newp: PlayerType): Unit = {
+      if (playerPerms != null) {
+        playerPerms.leave(player)
+        playerPerms.extraPerms foreach permissionAttachment.unsetPermission
+      } //waw a null check how awful
       playerPerms = newp
+      newp.join(player)
       playerPerms.extraPerms foreach (permissionAttachment.setPermission(_, true))
     }
 
     def updateRank (newrank: Rank): Unit = {
-      newrank match {
-        case Muted =>
-          Muted.permissions foreach (permissionAttachment.setPermission(_, false))
-        case x:Rank =>
-          rank.permissions foreach permissionAttachment.unsetPermission
-          x.permissions foreach (permissionAttachment.setPermission(_,true))
-      }
-      rank = newrank
+      val newerrank = rank copy newrank
+      rank.addPermissions foreach permissionAttachment.unsetPermission
+      rank.subPermissions foreach permissionAttachment.unsetPermission //TODO: HAELP
+      newerrank.addPermissions foreach (permissionAttachment.setPermission(_,true))
+      newerrank.subPermissions foreach (permissionAttachment.setPermission(_,false))
+      rank = newerrank
     }
 
     def leave(): Unit = {
 
     }
 
-
     def this (player: Player) {
-      this(new PlayerDB().autoClose(db => db.getRank(player.getUniqueId)), player.addAttachment(plugin))
+      this(new PlayerDB().autoClose(db => db.getPlayer(player.getUniqueId).rank), player.addAttachment(plugin))
     }
   }
 
   var players: mutable.HashMap[UUID, CustomWorldPlayer] = mutable.HashMap()
-
   def getPlayer (player: Player): CustomWorldPlayer = players(player.getUniqueId)
-  def isFreeOP (player: Player): Boolean = getPlayer(player).playerPerms == FreeOPPlayer
 
-  def joinMinigames (player: Player): Unit = {
+  def joinMinigames[A <: MinigamePlayerData] (player: Player, minigame:Minigame[A]): Unit = {
     val u = player.getUniqueId
-    players(u).updatePermissions(MinigamePlayer)
+    players(u).updatePermissions(player, MinigamePlayer(minigame))
+  }
+
+  def joinSurvival (player: Player): Unit = {
+    val u = player.getUniqueId
+    players(u).updatePermissions(player, SurvivalPlayer)
+    player.setGameMode(GameMode.SURVIVAL)
   }
 
   def joinFreeOP (player: Player): Unit = {
     val u = player.getUniqueId
-    minigame.leave (player)
-    players(u).updatePermissions(FreeOPPlayer)
+    players(u).updatePermissions(player, FreeOPPlayer(configuration.cfg))
     player.setGameMode(GameMode.CREATIVE)
     InfoMsg(ConfigMsg("opped")) sendClient player
-  }
-
-  def join (player: Player): Unit = {
-    players += (player.getUniqueId -> new CustomWorldPlayer(player))
-    ip.join(player)
-    nick.join(player)
-    mute.join(player)
-    joinFreeOP(player)
-  }
-
-  def leave (player: Player): Unit = {
-    players(player.getUniqueId) leave()
-    players -= player.getUniqueId
   }
 }

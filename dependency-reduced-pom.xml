@@ -27,11 +27,26 @@
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <minimizeJar>true</minimizeJar>
-            </configuration>
           </execution>
         </executions>
+        <configuration>
+          <minimizeJar>true</minimizeJar>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.ensime.maven.plugins</groupId>
+        <artifactId>ensime-maven</artifactId>
+        <version>1.2.0</version>
       </plugin>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
@@ -67,6 +82,14 @@
     </plugins>
   </build>
   <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>jcenter-bintray</name>
+      <url>http://jcenter.bintray.com</url>
+    </repository>
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>

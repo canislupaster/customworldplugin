@@ -1,45 +1,34 @@
-package com.thomas.customworld.db
+package scala.com.thomas.customworld.db
 
 import java.sql.{Connection, ResultSet}
-import java.util.UUID
 
 import com.github.takezoe.scala.jdbc._
-import com.thomas.customworld.player.rank
-import com.thomas.customworld.player.rank.Rank
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.player.{CustomPlayer, rank}
+import scala.com.thomas.customworld.player.rank.Rank
+import scala.com.thomas.customworld.util
 import org.bukkit.entity.Player
+import scala.com.thomas.customworld.util.UUID
 
 class PlayerDB() extends MainDB() {
+  def assembleplayer (sql:SqlTemplate): Option[CustomPlayer] = {data.selectFirst(sql) { x =>
+    val prank = x.getInt("rankid") match {case x:Int => rank.ranks(x); case _ => rank.ranks.head}
+    CustomPlayer(UUID(x.getString("playerid")), x.getString("username"), prank, Option(x.getString("nickname")))
+  }}
 
-  def updateUser(playerid:String, playername:String): Unit = {
-    data.update(sql"INSERT INTO player (playerid, username) VALUES ($playerid, $playername) ON DUPLICATE KEY UPDATE username=$playername")
+  def getPlayerFromName (playername:String): Option[CustomPlayer] = {
+    assembleplayer(sql"SELECT * FROM player WHERE LOWER(username) LIKE LOWER($playername)")
   }
 
-  def getUUIDFromName(playername:String): Option[String] = {
-    data.selectFirst(sql"SELECT * FROM player WHERE LOWER(username) LIKE LOWER($playername)") { x =>
-      x.getString("playerid")
-    } match {
-      case Some(x:String) => Some(x)
-      case _ => None
-    }
+  def getPlayer: UUID => CustomPlayer = { case UUID(playerid) =>
+    assembleplayer(sql"SELECT * FROM player WHERE playerid=$playerid").get
   }
 
-  def getRank(playerid:String) : Rank = {
-    data.selectFirst(sql"SELECT rankid FROM player WHERE playerid=$playerid") { x => x.getInt("rankid") }
-      match {case Some(x:Int) => rank.ranks(x); case _ => rank.ranks.head}
+  def updatePlayer: CustomPlayer => Int = { case CustomPlayer(UUID(id), name, prank, nick) =>
+    val ranknum = rank.ranks indexOf prank
+    data.update(sql"UPDATE player SET rankid=$ranknum, nickname=$nick, username=$name WHERE playerid=$id")
   }
 
-  def setRank(playerid:String, newrank:Rank) : Unit = {
-    val ranknum = rank.ranks indexOf newrank
-    data.update(sql"UPDATE player SET rankid=$ranknum WHERE playerid=$playerid")
-  }
-
-  def getNick(playerid:String) : Option[String] = {
-    val x = data.selectFirst(sql"SELECT nickname FROM player WHERE playerid=$playerid") {x => x.getString("nickname")}
-    x.flatMap (Option(_))
-  }
-
-  def setNick(playerid:String, nick:String) : Int = {
-    data.update(sql"UPDATE IGNORE player SET nickname=$nick WHERE playerid=$playerid")
+  def upsertPlayer: (UUID, String) => Unit = { case (UUID(id), username) =>
+    data.update(sql"INSERT INTO player (playerid, username) VALUES ($id, $username) ON DUPLICATE KEY UPDATE username=$username")
   }
 }

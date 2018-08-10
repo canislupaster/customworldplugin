@@ -1,25 +1,24 @@
-package com.thomas.customworld.db
+package scala.com.thomas.customworld.db
 
 import java.sql.{Connection, Date, Timestamp}
-import java.util.UUID
 
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.util._
 import com.github.takezoe.scala.jdbc._
-import com.thomas.customworld.player.ip.IpBan
+import scala.com.thomas.customworld.player.ip.IpBan
 
 
 class IpDB() extends MainDB() {
-  def addIp(playerid: String, ip: String): Int = {
+  def addIp: (UUID, String) => Int = { case (UUID(playerid), ip) =>
     data.update (sql"INSERT IGNORE INTO ip VALUES ($playerid, INET_ATON($ip))")
   }
 
-  def getIps(playerid: String): Seq[String] = {
+  def getIps: UUID => Seq[String] = { case UUID(playerid) =>
     data.select (sql"SELECT INET_NTOA(ip) FROM ip WHERE playerid=$playerid") { x =>
       x.getString("INET_NTOA(ip)")
     }
   }
 
-  def removeIps (playerid: String): Int = {
+  def removeIps: UUID => Int = { case UUID(playerid) =>
     data.update (sql"DELETE FROM ip WHERE playerid=$playerid")
   }
 
@@ -32,9 +31,6 @@ class IpDB() extends MainDB() {
   }
 
   def addBan (ipBan: IpBan): Int = {
-    ipBan.time match {
-      case Some(x) => data.update(sql"INSERT INTO ipban VALUES (INET_ATON(${ipBan.ip}), ${ipBan.reason}, $x)")
-      case None => data.update(sql"INSERT INTO ipban VALUES (INET_ATON(${ipBan.ip}), ${ipBan.reason}, NULL)")
-    }
+    data.update(sql"INSERT INTO ipban VALUES (INET_ATON(${ipBan.ip}), ${ipBan.reason}, ${ipBan.time})")
   }
 }

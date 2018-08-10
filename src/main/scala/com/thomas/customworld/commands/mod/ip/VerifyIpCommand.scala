@@ -1,9 +1,9 @@
-package com.thomas.customworld.commands.mod.ip
+package scala.com.thomas.customworld.commands.mod.ip
 
-import com.thomas.customworld.db.{DBConstructor, IpDB, MuteDB}
-import com.thomas.customworld.messaging._
-import com.thomas.customworld.player
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.db.{DBConstructor, IpDB, MuteDB}
+import scala.com.thomas.customworld.messaging._
+import scala.com.thomas.customworld.player
+import scala.com.thomas.customworld.util._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
@@ -19,7 +19,7 @@ class VerifyIpCommand extends CommandExecutor {
               case _ =>
                 InfoMsg (RuntimeMsg(x.getName), ConfigMsg("verified"), RuntimeMsg(sender.getName)) globalBroadcast sender.getServer
 
-                player.getPlayer(x).verify()
+                player.getPlayer(x) verify x
                 SuccessMsg
             }) sendClient sender
           case _ => ErrorMsg("noplayer") sendClient sender

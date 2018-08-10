@@ -1,25 +1,15 @@
-package com.thomas.customworld.commands.home
+package scala.com.thomas.customworld.commands.home
 
-import com.thomas.customworld.db.{DBConstructor, HomeDB}
-import com.thomas.customworld.messaging._
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.commands.base.CommandPart
+import scala.com.thomas.customworld.commands.base.{PermissionCommand, PlayerCommand}
+import scala.com.thomas.customworld.db.{DBConstructor, HomeDB}
+import scala.com.thomas.customworld.messaging._
+import scala.com.thomas.customworld.util._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
-class DelHomeCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    val db = new HomeDB()
+import scala.com.thomas.customworld.commands.home.HomeCommand
 
-    ((sender, args) match {
-      case (x: Player, y) =>
-        db.DelHome(x.getUniqueId, y reduce ((a,b) => a+" "+b)) match {
-          case false => ErrorMsg ("nohome")
-          case true => SuccessMsg
-        }
-      case _ => ErrorMsg ("noconsole")
-    }).sendClient(sender)
-
-    db close()
-    true
-  }
-}
+class DelHomeCommand extends HomeCommand((player, name, db) =>
+  if (db.DelHome(player.getUniqueId, name)) SuccessMsg else ErrorMsg("nohome")
+)

@@ -1,4 +1,4 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
 import java.sql.{Connection, DriverManager, ResultSet}
 
@@ -53,6 +53,43 @@ package object db {
       |    time datetime,
       |    FOREIGN KEY (ip) REFERENCES ip(ip)
       |);
+    ""","""
+      |CREATE TABLE IF NOT EXISTS theme (
+      |    themeid int(11) not null AUTO_INCREMENT,
+      |	   themename varchar(600) NOT NULL,
+      |    timestarting datetime not null,
+      |    timeending datetime not null,
+      |	   PRIMARY KEY (themeid)
+      |);
+    ""","""
+      |CREATE TABLE IF NOT EXISTS build (
+      |	   buildid int(11) not null AUTO_INCREMENT,
+      |    themeid int(11),
+      |    playerid varchar(36) NOT NULL,
+      |    buildname varchar(600) NOT NULL,
+      |    timecreated datetime NOT NULL,
+      |
+      |    worldid varchar(36) NOT NULL,
+      |
+      |    minx int NOT NULL,
+      |    minz int NOT NULL,
+      |
+      |    maxx int NOT NULL,
+      |    maxz int NOT NULL,
+      |
+      |    FOREIGN KEY (playerid) REFERENCES player(playerid),
+      |    FOREIGN KEY (themeid) REFERENCES theme(themeid),
+      |    UNIQUE (playerid, buildname),
+      |    PRIMARY KEY (buildid)
+      |);
+    ""","""
+      |CREATE TABLE IF NOT EXISTS buildvote (
+      |	   playerid varchar(36) NOT NULL,
+      |    buildid int(11) NOT NULL,
+      |    FOREIGN KEY (playerid) REFERENCES player(playerid),
+      |    FOREIGN KEY (buildid) REFERENCES build(buildid),
+      |    UNIQUE (playerid, buildid)
+      |)
     """.stripMargin) map (_.stripMargin)
   }
 

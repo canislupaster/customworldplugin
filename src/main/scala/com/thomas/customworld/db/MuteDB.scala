@@ -1,11 +1,11 @@
-package com.thomas.customworld.db
+package scala.com.thomas.customworld.db
 
 import java.sql.{Connection, Date, Timestamp}
 import java.util.UUID
 
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.util._
 import com.github.takezoe.scala.jdbc._
-import com.thomas.customworld.player.mute.Mute
+import scala.com.thomas.customworld.player.mute.Mute
 
 
 class MuteDB() extends MainDB() {

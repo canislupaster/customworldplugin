@@ -123,3 +123,4 @@ local.properties
 *.log
 
 .ensime_cache/
+.ensime

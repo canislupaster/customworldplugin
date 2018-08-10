@@ -1,8 +1,8 @@
-package com.thomas.customworld.commands.mod
+package scala.com.thomas.customworld.commands.mod
 
-import com.thomas.customworld.freeop
-import com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
-import com.thomas.customworld.util.{Dbl, Int, spaceJoin}
+import scala.com.thomas.customworld.player.freeop
+import scala.com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
+import scala.com.thomas.customworld.util.{Dbl, Int, spaceJoin}
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player

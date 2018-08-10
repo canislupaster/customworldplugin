@@ -1,12 +1,12 @@
-package com.thomas.customworld.minigame
+package scala.com.thomas.customworld.minigame
 
 import java.io.File
 import java.util
 import java.util.UUID
 
-import com.thomas.customworld.{freeop, player}
-import com.thomas.customworld
-import com.thomas.customworld.util._
+import scala.com.thomas.customworld.{EventModule, player}
+import scala.com.thomas.customworld
+import scala.com.thomas.customworld.util._
 import org.bukkit.{ChatColor, GameMode, Location}
 import org.bukkit.entity.{Entity, Player}
 import org.bukkit.inventory.{Inventory, ItemStack}
@@ -23,17 +23,20 @@ import com.sk89q.worldedit.blocks.BaseBlock
 import com.sk89q.worldedit.extent.Extent
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.sk89q.worldedit.regions.CuboidRegion
-import com.thomas.customworld.messaging.ErrorMsg
-import org.bukkit.event.Event
+
+import scala.com.thomas.customworld.messaging.ErrorMsg
+import org.bukkit.event.{Cancellable, Event}
 import org.bukkit.event.block.{BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.{EntityDamageEvent, PlayerDeathEvent}
 import org.bukkit.event.player.{PlayerEvent, PlayerItemDamageEvent, PlayerMoveEvent, PlayerTeleportEvent}
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
+import scala.com.thomas.customworld.player.freeop
+import scala.com.thomas.customworld.player.freeop.ProtectedRegion
 import scala.reflect.ClassTag
 
-abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable {
+abstract class Minigame[T <: MinigamePlayerData : ClassTag](plugin: Plugin, region:Box, spawnLoc: Location, signLoc: Location) extends BukkitRunnable with EventModule {
   val minPlayers = 2
   val gameTime = 500
   var state:GameState = WaitingForPlayers ()
@@ -47,7 +50,7 @@ abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:B
 
   initializeMap()
 
-  freeop.registerProtected(region)
+  freeop.registerProtected(ProtectedRegion(region, List()))
 
   def getPlayers: Array[Player] = players map {case (x,y) => plugin.getServer.getPlayer(x)} toArray
   def getMinigamePlayers: Array[T] = (players map { case (_, y) => y }) toArray
@@ -119,9 +122,8 @@ abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:B
     state = updateState(state)
   }
 
-  def join (newplayer: Player): Unit = {
+  override def join (newplayer: Player): Unit = {
     players += (newplayer.getUniqueId -> defaultPlayer (newplayer.getInventory.getContents))
-    player.joinMinigames (newplayer)
 
     newplayer.setGameMode(GameMode.ADVENTURE)
     newplayer.getInventory.clear()
@@ -137,7 +139,7 @@ abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:B
     player.teleport(spawnLoc)
   }
 
-  def leave (leaveplayer: Player): Unit = {
+  override def leave (leaveplayer: Player): Unit = {
     leaveplayer.getInventory.setContents(players(leaveplayer.getUniqueId).inventory)
 
     leaveplayer.setScoreboard(plugin.getServer.getScoreboardManager.getNewScoreboard)
@@ -147,10 +149,11 @@ abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:B
     leaveplayer.teleport(signLoc)
   }
 
-  def tryJoin (player: Player, loc:Location): Unit = {
+  def tryJoin (x: Player, loc:Location): Unit = {
     state match {
       case _:Playing => ()
-      case _ if loc==signLoc => join(player)
+      case _ if loc==signLoc => player.joinMinigames (x, this)
+      case _ => ()
     }
   }
 
@@ -173,25 +176,19 @@ abstract class Minigame[T <: MinigamePlayer : ClassTag](plugin: Plugin, region:B
   def blockBreak (event: BlockBreakEvent): Unit = { event.setCancelled(true) }
   def blockPlace (event: BlockPlaceEvent): Unit = { event.setCancelled(true) }
 
-  def tryOtherEv: Event => Unit = _ => ()
-  def tryEv (event: Event): Unit = {
+  override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
     event match {
-      case e: PlayerEvent if playerInGame(e.getPlayer) =>
-        e match {
-          case e: PlayerMoveEvent => playerMove(e)
-          //case e: PlayerTeleportEvent => playerMove(e)
-          case e: PlayerItemDamageEvent => playerItemDamage(e)
-          case _ => ()
-        }
+      case e: PlayerMoveEvent => playerMove(e)
+      case e: PlayerItemDamageEvent => playerItemDamage(e)
 
-      case e: PlayerMoveEvent if region hasLoc e.getTo =>
-        e.setCancelled(!e.getPlayer.hasPermission("spawnbuild"))
-      case e: EntityDamageEvent => e.getEntity match {case x:Player if playerInGame(x) => playerDamage(e, x) case _ => ()}
+//      case e: PlayerMoveEvent if region hasLoc e.getTo =>
+//        e.setCancelled(!e.getPlayer.hasPermission("spawnbuild")) TODO: reimplement
+      case e: EntityDamageEvent => playerDamage(e, e.getEntity.asInstanceOf[Player]) //TODO: entitydamageevent
 
-      case e: BlockBreakEvent if playerInGame(e.getPlayer) => blockBreak(e)
-      case e: BlockPlaceEvent if playerInGame(e.getPlayer)  => blockPlace(e)
+      case e: BlockBreakEvent => blockBreak(e)
+      case e: BlockPlaceEvent => blockPlace(e)
 
-      case _ => tryOtherEv(event)
+      case _ => ()
     }
   }
 }

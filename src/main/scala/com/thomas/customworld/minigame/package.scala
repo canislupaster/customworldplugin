@@ -1,18 +1,20 @@
-package com.thomas.customworld
+package scala.com.thomas.customworld
 
 import java.io.File
 import java.util.UUID
 
 import com.boydti.fawe.`object`.schematic.Schematic
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
-import com.thomas.customworld.util.Box
-import org.bukkit.{ChatColor, Location}
-import org.bukkit.block.Sign
+
+import scala.com.thomas.customworld.util.Box
+import org.bukkit.{ChatColor, Location, Material}
+import org.bukkit.block.{BlockState, Sign}
 import org.bukkit.entity.Player
-import org.bukkit.event.Event
+import org.bukkit.event.{Cancellable, Event}
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerMoveEvent}
 import org.bukkit.plugin.Plugin
-import com.thomas.customworld.util.WEVec
+
+import scala.com.thomas.customworld.util.WEVec
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
@@ -20,18 +22,18 @@ import scala.collection.mutable.ArrayBuffer
 
 package object minigame {
   type Inventory = Array[ItemStack]
-  class MinigamePlayer () {
+  class MinigamePlayerData() {
     val inventory: Inventory = Array()
     var playing = false
   }
-  case class SimpleMinigamePlayer(override val inventory:Inventory) extends MinigamePlayer
+  case class SimpleMinigamePlayerData(override val inventory:Inventory) extends MinigamePlayerData
 
   trait GameState
   case class WaitingForPlayers () extends GameState {override def toString = s"${ChatColor.GRAY}Waiting for players..."}
   case class Countdown (timeLeft:Int) extends GameState {override def toString = s"${ChatColor.YELLOW}$timeLeft until start!"}
   case class Playing (timeLeft:Int) extends GameState {override def toString = s"${ChatColor.GREEN}$timeLeft until game end!"}
 
-  var Minigames:ArrayBuffer[Minigame[SimpleMinigamePlayer]] = ArrayBuffer()
+  var Minigames:ArrayBuffer[Minigame[SimpleMinigamePlayerData]] = ArrayBuffer()
   var CageSchematic:Schematic = _
 
   def InitializeMinigames (plugin: Plugin): Unit = {
@@ -42,7 +44,8 @@ package object minigame {
 
     CageSchematic = ClipboardFormat.SCHEMATIC.load(new File(cfg.getString("minigame.cage")))
 
-    Minigames += new SpleefMinigame(plugin, new Box(world, cfg.getVector("minigame.spleef.minRegion"), cfg.getVector("minigame.spleef.maxRegion")),
+    Minigames += new SpleefMinigame(plugin,
+      new Box(world, cfg.getVector("minigame.spleef.minRegion"), cfg.getVector("minigame.spleef.maxRegion")),
       cfg.getVector("minigame.spleef.spawnPos").toLocation(world),
       cfg.getVector("minigame.spleef.signPos").toLocation(world),
       ClipboardFormat.SCHEMATIC.load(new File(cfg.getString("minigame.spleef.template"))))
@@ -50,19 +53,25 @@ package object minigame {
     Minigames foreach (_.runTaskTimer(plugin, 20, 20))
   }
 
-  def leave (player: Player): Unit = {
-    Minigames foreach (_.tryLeave(player))
-  }
+  object minigameEventModule extends EventModule {
+    def signinteract (player:Player, sign: Sign): Unit = {
+      Minigames foreach (_.tryJoin(player, sign.getLocation()))
+    }
 
-  def ev (event: Event): Unit = {
-    Minigames foreach (_.tryEv(event))
-  }
+    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+      event match {
+        case event: PlayerInteractEvent =>
+          if (event.hasBlock && event.getClickedBlock.getType == Material.SIGN_POST) {
+              event.getClickedBlock.getState match {
+              case x:Sign => signinteract(player, x)
+              case _ => ()
+            }
+          }; case _ => ()
+      }
+    }
 
-  def stop (): Unit ={
-    Minigames foreach (_.cancel())
-  }
-
-  def signinteract (plugin: Plugin, player:Player, sign: Sign): Unit = {
-    Minigames foreach (_.tryJoin(player, sign.getLocation()))
+    override def disable(plugin: Plugin): Unit = {
+      Minigames foreach (_.cancel())
+    }
   }
 }

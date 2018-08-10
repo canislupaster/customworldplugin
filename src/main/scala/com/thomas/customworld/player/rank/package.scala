@@ -1,63 +1,81 @@
-package com.thomas.customworld.player
+package scala.com.thomas.customworld.player
 
-import com.thomas.customworld.CustomWorldPlugin
+import org.bukkit.configuration.file.FileConfiguration
+
+import scala.com.thomas.customworld.CustomCore
+import scala.com.thomas.customworld.configuration._
 import scala.collection.JavaConverters._
 
 package object rank {
   import org.bukkit.ChatColor
 
   trait Rank {
-    def permissions:Set[String] = Set()
+    def addPermissions:Set[String] = Set()
+    def subPermissions:Set[String] = Set()
     def Color = ChatColor.RED
     def HasPermission (perm:String): Boolean = {
-      permissions contains perm
+      addPermissions contains perm
     }
+
+    def copy (rank:Rank): Rank = rank
+
     def Tag:String = {
       s"$Color${this.toString}"
     }
   }
 
-  def rankCfg (x:String): Set[String] = {
-    CustomWorldPlugin.plugin.getConfig.getStringList(s"permission.$x").asScala.toSet
+  def rankCfg (x:String, cfg:FileConfiguration): Set[String] = {
+    cfg.getStringList(s"permission.$x").asScala.toSet
   }
 
   case object Regular extends Rank {
-    override def permissions: Set[String] = rankCfg("regular")
+    override def addPermissions: Set[String] = rankCfg("regular", cfg)
     override def Color = ChatColor.GRAY
   }
 
   case object Helper extends Rank {
-    override def permissions: Set[String] = Regular.permissions ++ rankCfg("helper")
+    override def addPermissions: Set[String] = Regular.addPermissions ++ rankCfg("helper", cfg)
     override def Color = ChatColor.BLUE
   }
 
   case object Builder extends Rank {
-    override def permissions: Set[String] = Helper.permissions ++ rankCfg("builder")
+    override def addPermissions: Set[String] = Helper.addPermissions ++ rankCfg("builder", cfg)
     override def Color = ChatColor.GREEN
   }
 
   case object Mod extends Rank {
-    override def permissions: Set[String] = Builder.permissions ++ rankCfg("mod")
+    override def addPermissions: Set[String] = Builder.addPermissions ++ rankCfg("mod", cfg)
     override def Color = ChatColor.AQUA
   }
 
   case object Staff extends Rank {
-    override def permissions: Set[String] = Mod.permissions ++ rankCfg("staff")
+    override def addPermissions: Set[String] = Mod.addPermissions ++ rankCfg("staff", cfg)
     override def Color = ChatColor.GOLD
   }
 
   case object StaffPlus extends Rank {
-    override def permissions: Set[String] = Staff.permissions ++ rankCfg("staff+")
+    override def addPermissions: Set[String] = Staff.addPermissions ++ rankCfg("staff+", cfg)
     override def Color = ChatColor.GOLD
 
     override def toString: String = "Staff+"
   }
 
-  case object Muted extends Rank {
-    override def permissions: Set[String] = rankCfg("muted")
+  case class UnMuted(rank:Rank) extends Rank
+
+  case class Muted(rank:Rank) extends Rank {
+    override def addPermissions: Set[String] = rank.addPermissions
+    override def subPermissions: Set[String] = rankCfg("muted", cfg) ++ rank.subPermissions
     override def Color = ChatColor.DARK_GRAY
 
-    override def toString: String = "Muted"
+    override def copy(rank: Rank): Rank = {
+      rank match {
+        case UnMuted (r) => r
+        case Muted(r) => Muted(r)
+        case r => Muted(r)
+      } //toggle
+    }
+
+    override def toString: String = s"Muted ${rank.toString}"
   }
 
   val ranks = List (Regular, Helper, Builder, Mod, Staff, StaffPlus)

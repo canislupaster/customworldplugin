@@ -1,6 +1,6 @@
-package com.thomas.customworld.commands
+package scala.com.thomas.customworld.commands
 
-import com.thomas.customworld.messaging.{ConfigMsg, InfoMsg}
+import scala.com.thomas.customworld.messaging.{ConfigMsg, InfoMsg}
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 
 class HelpCommand () extends CommandExecutor {

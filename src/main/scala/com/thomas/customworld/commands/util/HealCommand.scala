@@ -1,24 +1,21 @@
-package com.thomas.customworld.commands.util
+package scala.com.thomas.customworld.commands.util
 
-import com.thomas.customworld.messaging._
+import scala.com.thomas.customworld.commands.base.CommandPart
+import scala.com.thomas.customworld.commands.base.{PermissionCommand, PlayerCommand}
+import scala.com.thomas.customworld.messaging._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
+import scala.com.thomas.customworld.util.SomeArr
 
-class HealCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    (sender match {
-      case player:Player =>
-        player.setHealth(20.0)
-        player.setFoodLevel(20)
-        (player.getActivePotionEffects toSet) foreach ((x:PotionEffect) => player.removePotionEffect (x.getType ))
-        SuccessMsg
-      case _ =>
-        ErrorMsg("noconsole")
-    }) sendClient sender
-
-    true
+class HealCommand extends PlayerCommand("heal") {
+  override def commandPart:CommandPart = (sender, command, label, args) => {
+    val player:Player = sender.asInstanceOf[Player]
+    player.setHealth(20.0)
+    player.setFoodLevel(20)
+    (player.getActivePotionEffects.asScala toSet) foreach ((x:PotionEffect) => player.removePotionEffect (x.getType ))
+    SomeArr(SuccessMsg)
   }
 }

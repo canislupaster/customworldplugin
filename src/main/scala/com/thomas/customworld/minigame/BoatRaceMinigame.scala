@@ -1,4 +1,4 @@
-package com.thomas.customworld.minigame
+package scala.com.thomas.customworld.minigame
 
 import java.io.File
 
@@ -7,7 +7,7 @@ import com.boydti.fawe.util.EditSessionBuilder
 import com.sk89q.worldedit.blocks.{BaseBlock, BlockType}
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.sk89q.worldedit.function.pattern.{Pattern, RandomPattern}
-import com.thomas.customworld.util.Box
+import scala.com.thomas.customworld.util.Box
 import org.bukkit
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity
@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-case class BoatRacePlayer (lap:Int, override val inventory:Inventory) extends MinigamePlayer
+case class BoatRacePlayerData(lap:Int, override val inventory:Inventory) extends MinigamePlayerData
 //class BoatRaceMinigame (plugin: Plugin, region:Box, spawnLoc: Location, spawnLocs:List[Location], signLoc: Location) extends Minigame[BoatRacePlayer] (plugin, region, spawnLoc, signLoc) {
 //  override val name: String = "BOATRACE"
 //
