@@ -47,15 +47,15 @@ package object util {
 
     def intersectXZ(box2:Box): Boolean = {
       val (x,y,a,b,x1,y1,a1,b1) = (min.getBlockX, min.getBlockZ, max.getBlockX, max.getBlockZ, box2.min.getBlockX, box2.min.getBlockZ, box2.max.getBlockX, box2.max.getBlockZ)
-      !(a<x1 || a1<x || b<y1 || b1<y) // credit goes to stackoverflow: https://stackoverflow.com/questions/13390333/two-rectangles-intersection
+      (!(a<x1 || a1<x || b<y1 || b1<y)) && box2.bworld == bworld // credit goes to stackoverflow: https://stackoverflow.com/questions/13390333/two-rectangles-intersection
     }
 
     def this(world:World, min:Vector, max:Vector) {
       this(world, WEVec(min).toBlockVector, WEVec(max).toBlockVector)
     }
 
-    def this(world:World, region:Region) {
-      this(world, region.getMinimumPoint.toBlockVector, region.getMaximumPoint.toBlockVector)
+    def this(region:Region) {
+      this(CustomCore.server.getWorld(region.getWorld.getName), region.getMinimumPoint.toBlockVector, region.getMaximumPoint.toBlockVector)
     }
 
     def copyBox():Schematic = {
@@ -97,6 +97,10 @@ package object util {
 
     def hasXZ (x:Int,z:Int): Boolean = {
       x >= min.getBlockX && x <= max.getBlockX && z >= min.getBlockZ && z <= max.getBlockZ
+    }
+
+    def setY (y:Int) = {
+        this.copy(min=min.setY(y).toBlockVector, max=max.setY(y).toBlockVector)
     }
   }
 

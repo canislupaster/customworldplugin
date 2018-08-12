@@ -29,15 +29,15 @@ class BuildDB extends MainDB {
   }
 
   def getThemeBuilds (theme: Theme, page:Paginator): Seq[Build] = {
-    data.select(sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid WHERE build.themeid=${theme.themeId} GROUP BY build.buildid ORDER BY COUNT(build.buildid) DESC LIMIT ${page.from},${page.to}") (assemblebuild)
+    data.select(sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid WHERE build.themeid=${theme.themeId} GROUP BY build.buildid ORDER BY SUM(buildvote.rating) DESC LIMIT ${page.from},${page.to}") (assemblebuild)
   }
 
   def getUserBuilds: (UUID, Paginator) => Seq[Build] = { case (UUID(id), page) =>
-    data.select (sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid WHERE build.playerid=$id GROUP BY build.buildid ORDER BY COUNT(build.buildid) DESC LIMIT ${page.from},${page.to}")(assemblebuild)
+    data.select (sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid WHERE build.playerid=$id GROUP BY build.buildid ORDER BY SUM(buildvote.rating) DESC LIMIT ${page.from},${page.to}")(assemblebuild)
   }
 
   def getBuilds (page:Paginator): Seq[Build] = {
-    data.select(sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid GROUP BY build.buildid ORDER BY COUNT(build.buildid) DESC LIMIT ${page.from},${page.to}")(assemblebuild)
+    data.select(sql"SELECT build.* FROM build LEFT JOIN buildvote ON build.buildid = buildvote.buildid GROUP BY build.buildid ORDER BY SUM(buildvote.rating) DESC LIMIT ${page.from},${page.to}")(assemblebuild)
   }
 
   def getAllBuilds: Seq[Build] = {
@@ -62,7 +62,12 @@ class BuildDB extends MainDB {
 
   def addBuild: (UUID, String, Option[Long], Box) => Int = {
     case (UUID(playerid), name, themeid, Box(world, min, max)) => data.update(
-      sql"INSERT INTO build (themeid, playerid, buildname, timecreated, worldid, minx, minz, maxx, maxz) VALUES ($themeid, $playerid, $name, NOW(), ${UUID.unapply(world.getUID)}, ${min.getBlockX}, ${min.getBlockZ}, ${max.getBlockX}, ${max.getBlockZ})")
+      sql"INSERT IGNORE INTO build (themeid, playerid, buildname, timecreated, worldid, minx, minz, maxx, maxz) VALUES ($themeid, $playerid, $name, NOW(), ${UUID.unapply(world.getUID)}, ${min.getBlockX}, ${min.getBlockZ}, ${max.getBlockX}, ${max.getBlockZ})")
+  }
+
+  def updateBuild: Build => Int = { case Build(id, _, Box(world, min, max), name, theme, timecreated) => data.update(
+      sql"UPDATE build SET themeid=${theme map (_.themeId)}, buildname=$name, timecreated=$timecreated, worldid=${UUID.unapply(world.getUID)}, minx=${min.getBlockX}, minz=${min.getBlockZ}, maxx=${max.getBlockX}, maxz=${max.getBlockZ} WHERE buildid=$id"
+    )
   }
 
   def removeBuild(build: Build): Int = {
@@ -74,23 +79,23 @@ class BuildDB extends MainDB {
     case (UUID(playerid), name) => data.selectFirst(sql"SELECT * FROM build WHERE playerid=$playerid AND LOWER(buildname) LIKE LOWER($name)") (assemblebuild)
   }
 
-  type buildVote = UUID
-  def assemblevote (x:ResultSet) :buildVote = UUID(x.getString("playerid"))
+  type buildVote = (UUID, Int)
+  def assemblevote (x:ResultSet) :buildVote = (UUID(x.getString("playerid")), x.getInt("rating"))
 
   def removeVotes (build:Build) = {
     data.update(s"DELETE FROM buildvote WHERE buildid=${build.buildId}")
   }
 
   def getVotes (build:Build): Seq[buildVote] = {
-    data.select(sql"SELECT playerid FROM buildvote WHERE buildid=${build.buildId}")(assemblevote)
+    data.select(sql"SELECT * FROM buildvote WHERE buildid=${build.buildId}")(assemblevote)
   }
 
   def getVote: (Build, UUID) => Option[buildVote] = { case (build, UUID(id)) =>
-    data.selectFirst(sql"SELECT playerid FROM buildvote WHERE buildid=${build.buildId} AND playerid=$id")(assemblevote)
+    data.selectFirst(sql"SELECT * FROM buildvote WHERE buildid=${build.buildId} AND playerid=$id")(assemblevote)
   }
 
-  def setVote: (Build, UUID) => Int = { case (build, UUID(id)) =>
-    data.update(sql"INSERT IGNORE INTO buildvote VALUES ($id, ${build.buildId})")
+  def setVote: (Build, Int, UUID) => Int = { case (build, i, UUID(id)) =>
+    data.update(sql"INSERT INTO buildvote VALUES ($id, ${build.buildId}, $i) ON DUPLICATE KEY UPDATE rating=$i")
   }
 
   def inBuild (x:Int, z:Int): Option[Build] = {

@@ -11,7 +11,7 @@ import scala.com.thomas.customworld.messaging.PlayerJoinMessage
 import scala.com.thomas.customworld.util.toUUID
 
 object playerEventModule extends EventModule {
-  override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+  override def playerEv(event: Event, player: Player): Unit = {
     val cplayer = getPlayer(player)
     cplayer.playerPerms.playerEv(event, player)
   }

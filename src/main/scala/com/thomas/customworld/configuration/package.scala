@@ -52,6 +52,8 @@ package object configuration {
       "lang.in" -> "You are in",
       "lang.io" -> "An IO exception occurred, check console.",
       "lang.loading" -> "Please wait...",
+      "lang.reloadbot" -> "Bot is not initialized, please restart server.",
+      "lang.toolong" -> "Please use a shorter name!",
 
       "lang.help" ->
         """
@@ -109,7 +111,7 @@ package object configuration {
       "db.username" -> "root",
       "db.password" -> "mysql",
 
-      "permission.regular" -> List("talk", "spawn", "fawe.CustomCore").asJava,
+      "permission.regular" -> List("talk", "nick", "spawn", "fawe.CustomCore").asJava,
       "permission.helper" -> List().asJava,
       "permission.builder" -> List("blocks", "spawnbuild").asJava,
       "permission.mod" -> List("tempban", "kick", "fawe.admin").asJava,
@@ -126,9 +128,9 @@ package object configuration {
       "freeop.explosions" -> true,
       "freeop.buildlimit" -> 2000,
 
-      "discord.token" -> "NDc0ODc3Mzk4Mjc4NDcxNjgw.Dk6TEQ.RaX37LjRPVuKzibYH-dNRY-TH3Q",
+      "discord.token" -> "NDc3NjUzMDY3NzUyMjc1OTY5.Dk_Qpw.2VWlsol5q5PcvxRSeiRa5s2ycf8",
 
-      "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world", "build").asJava,
+      "permission.freeop" -> List("minecraft.command.gamemode", "fawe.permpack.basic", "world", "home", "speed", "heal", "gamemode", "build").asJava,
       "permission.muted" -> List("minecraft.command.me", "minecraft.command.tell", "talk").asJava
     ) mapValues (_.asInstanceOf[AnyRef])
     JavaConverters.mapAsJavaMap (map)

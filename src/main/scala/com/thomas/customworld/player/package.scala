@@ -27,17 +27,17 @@ package object player {
 
   trait PlayerType extends EventModule {def extraPerms:Set[String] = Set();}
   case class MinigamePlayer[A <: MinigamePlayerData](minigame:Minigame[A]) extends PlayerType {
-    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = minigame.playerEv(event, player)
+    override def playerEv(event: Event, player: Player): Unit = minigame.playerEv(event, player)
 
     override def join(player: Player): Unit = minigame.join(player)
     override def leave(player: Player): Unit = minigame.leave(player)
   }
 
   case object UnverifiedPlayer extends PlayerType {
-    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+    override def playerEv(event: Event, player: Player): Unit = {
       event match {
         case _:AsyncPlayerChatEvent => ()
-        case _ => event.setCancelled(true)
+        case event:Cancellable => event.setCancelled(true)
       }
     }
   }
@@ -61,12 +61,21 @@ package object player {
       updateRank(rankcons)
     }
 
+    def reset (player:Player): Unit = {
+      player.setGameMode(GameMode.CREATIVE)
+      player.setCollidable(false)
+      player.setHealth(20)
+      player.setFlySpeed(0.2f)
+      player.setWalkSpeed(0.2f)
+    }
+
     def updatePermissions (player:Player, newp: PlayerType): Unit = {
       if (playerPerms != null) {
         playerPerms.leave(player)
         playerPerms.extraPerms foreach permissionAttachment.unsetPermission
       } //waw a null check how awful
       playerPerms = newp
+      reset (player)
       newp.join(player)
       playerPerms.extraPerms foreach (permissionAttachment.setPermission(_, true))
     }
@@ -100,13 +109,11 @@ package object player {
   def joinSurvival (player: Player): Unit = {
     val u = player.getUniqueId
     players(u).updatePermissions(player, SurvivalPlayer)
-    player.setGameMode(GameMode.SURVIVAL)
   }
 
   def joinFreeOP (player: Player): Unit = {
     val u = player.getUniqueId
     players(u).updatePermissions(player, FreeOPPlayer(configuration.cfg))
-    player.setGameMode(GameMode.CREATIVE)
     InfoMsg(ConfigMsg("opped")) sendClient player
   }
 }

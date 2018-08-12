@@ -22,10 +22,14 @@ object DiscordBot extends EventModule {
   var client:IDiscordClient = _
 
   override def enable(plugin:Plugin) {
-    val cfg = plugin.getConfig
-    client = new ClientBuilder().withToken(cfg.getString("discord.token")).login()
-    client.changePresence(StatusType.IDLE, ActivityType.WATCHING, "you guys... creepily :)")
-    client.getDispatcher.registerListener(new DiscordBotJava())
+    try {
+      val cfg = plugin.getConfig
+      client = new ClientBuilder().withToken(cfg.getString("discord.token")).login()
+      client.changePresence(StatusType.IDLE, ActivityType.WATCHING, "you guys... creepily :)")
+      client.getDispatcher.registerListener(new DiscordBotJava())
+    } catch {
+      case _ => ErrorMsg("reloadbot") globalBroadcast plugin.getServer
+    }
   }
 
   def evDiscord (t: MessageReceivedEvent): Unit = {

@@ -54,6 +54,14 @@ permissions:
     description: Manage, find, and create builds
   theme:
     description: Manage themes
+  nick:
+    description: Nickname yourself
+  gamemode:
+    description: Switch gamemode
+  speed:
+    description: Change speed
+  setothergamemode:
+    description: Set others' gamemodes.
 
 commands:
   rank:
@@ -152,6 +160,14 @@ commands:
     description: Delete one of your builds
     aliases: []
     usage: /delbuild name
+  renamebuild:
+    description: Rename one of your builds
+    aliases: []
+    usage: /renamebuild [oldbuild] -> [newbuild]
+  expandbuild:
+    description: Expand one of your builds
+    aliases: []
+    usage: /expandbuild [buildname]
   maketheme:
     description: Makes a new theme
     aliases: []
@@ -159,4 +175,8 @@ commands:
   vote:
     description: Vote for a build
     aliases: []
-    usage: /vote [player] [buildname]
+    usage: /vote [0-5] [player] [buildname]
+  speed:
+    description: Change your speed
+    aliases: []
+    usage: /speed [fly|walk] amount

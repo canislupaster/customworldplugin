@@ -2,22 +2,22 @@ package scala.com.thomas.customworld.commands.build
 
 import org.bukkit.entity.Player
 
-import scala.com.thomas.customworld.commands.base.{CommandPart, OfflinePlayerArg, PlayerCommand}
+import scala.com.thomas.customworld.commands.base
+import scala.com.thomas.customworld.commands.base.{CommandPart, OfflinePlayerArg, PermissionCommand}
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, Message, SuccessMsg}
 import scala.com.thomas.customworld.util._
 
-class VoteCommand extends PlayerCommand("build") {
-  override def commandPart: CommandPart = (sender, cmd, name, args) => {
-    val player = sender.asInstanceOf[Player]
-
+class VoteCommand extends PermissionCommand("build", base.PlayerCommand((player, cmd, name, args) => {
     args match {
       case x => x.toList match {
-        case OfflinePlayerArg(voteplayer) :: buildname if buildname.nonEmpty =>
+        case Int(i) :: OfflinePlayerArg(voteplayer) :: buildname if buildname.nonEmpty && i>=0 && i<=5 =>
           val db = new BuildDB()
           val msg:Option[Array[Message]] = db.getBuildByName(voteplayer.playerid, spaceJoin(buildname)) match {
-            case Some(build) => if (db.setVote(build, player.getUniqueId) > 0) SomeArr(SuccessMsg) else SomeArr(ErrorMsg("alreadyvoted"))
-            case None => SomeArr(ErrorMsg("nobuild"))
+            case Some(build) if build.playerId != toUUID(player.getUniqueId) =>
+              db.setVote(build, i, player.getUniqueId)
+              SomeArr(SuccessMsg)
+            case _ => SomeArr(ErrorMsg("nobuild"))
           }
 
           db.close()
@@ -25,5 +25,4 @@ class VoteCommand extends PlayerCommand("build") {
         case _ => None
       }
     }
-  }
-}
+}))

@@ -86,6 +86,7 @@ package object db {
       |CREATE TABLE IF NOT EXISTS buildvote (
       |	   playerid varchar(36) NOT NULL,
       |    buildid int(11) NOT NULL,
+      |    rating int NOT NULL,
       |    FOREIGN KEY (playerid) REFERENCES player(playerid),
       |    FOREIGN KEY (buildid) REFERENCES build(buildid),
       |    UNIQUE (playerid, buildid)

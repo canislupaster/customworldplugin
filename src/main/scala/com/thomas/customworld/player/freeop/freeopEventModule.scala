@@ -37,7 +37,7 @@ object freeopEventModule extends EventModule { //not caused by player events
 
     plugin.getServer.getWorlds forEach(x => registerProtected (ProtectedRegion(new Box(x, x.getSpawnLocation.toVector, x.getSpawnLocation.toVector) expand 30, List())))
     val builds = new BuildDB().autoClose(_.getAllBuilds)
-    builds foreach (x => registerProtected(ProtectedRegion(x.region, List(x.playerId))))
+    builds foreach (x => registerProtected(x protectedRegion))
 
     jumppadSettings.update(plugin.getConfig)
   }

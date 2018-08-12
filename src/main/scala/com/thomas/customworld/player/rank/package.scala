@@ -1,5 +1,6 @@
 package scala.com.thomas.customworld.player
 
+import net.md_5.bungee.api.chat.{BaseComponent, TextComponent}
 import org.bukkit.configuration.file.FileConfiguration
 
 import scala.com.thomas.customworld.CustomCore
@@ -19,8 +20,8 @@ package object rank {
 
     def copy (rank:Rank): Rank = rank
 
-    def Tag:String = {
-      s"$Color${this.toString}"
+    def Tag:Array[BaseComponent] = {
+      TextComponent.fromLegacyText(s"$Color${this.toString}")
     }
   }
 

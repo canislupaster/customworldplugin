@@ -50,7 +50,7 @@ abstract class Minigame[T <: MinigamePlayerData : ClassTag](plugin: Plugin, regi
 
   initializeMap()
 
-  freeop.registerProtected(ProtectedRegion(region, List()))
+  freeop.registerProtected(ProtectedRegion(region expand 15, List()))
 
   def getPlayers: Array[Player] = players map {case (x,y) => plugin.getServer.getPlayer(x)} toArray
   def getMinigamePlayers: Array[T] = (players map { case (_, y) => y }) toArray
@@ -111,7 +111,7 @@ abstract class Minigame[T <: MinigamePlayerData : ClassTag](plugin: Plugin, regi
         if (tickPlaying(timeLeft)) {
           end()
 
-          doPlayers (leave)
+          doPlayers (player.joinFreeOP)
 
           WaitingForPlayers ()
         } else Playing(timeLeft-1)
@@ -145,8 +145,6 @@ abstract class Minigame[T <: MinigamePlayerData : ClassTag](plugin: Plugin, regi
     leaveplayer.setScoreboard(plugin.getServer.getScoreboardManager.getNewScoreboard)
 
     players -= leaveplayer.getUniqueId
-
-    leaveplayer.teleport(signLoc)
   }
 
   def tryJoin (x: Player, loc:Location): Unit = {
@@ -176,7 +174,7 @@ abstract class Minigame[T <: MinigamePlayerData : ClassTag](plugin: Plugin, regi
   def blockBreak (event: BlockBreakEvent): Unit = { event.setCancelled(true) }
   def blockPlace (event: BlockPlaceEvent): Unit = { event.setCancelled(true) }
 
-  override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+  override def playerEv(event: Event, player: Player): Unit = {
     event match {
       case e: PlayerMoveEvent => playerMove(e)
       case e: PlayerItemDamageEvent => playerItemDamage(e)

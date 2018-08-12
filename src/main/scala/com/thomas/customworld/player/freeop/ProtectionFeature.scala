@@ -32,7 +32,7 @@ class ProtectionFeature[T](plugin: Plugin) extends FaweMaskManager[T](plugin.get
     new FaweMask(new SimpleRegion(world, world.getMinimumPoint, world.getMaximumPoint) {
       val allowedSel: Boolean = Option (fp.getSelection) match {
         case Some (sel) =>
-          val selBox = new Box(CustomCore.server.getWorld(world.getName), sel)
+          val selBox = new Box(sel)
           !(
             protectedRegions exists ( x => (selBox intersectXZ x.region)
             && (!(x.owner contains toUUID(player.getUniqueId))) )

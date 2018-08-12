@@ -58,7 +58,7 @@ package object minigame {
       Minigames foreach (_.tryJoin(player, sign.getLocation()))
     }
 
-    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+    override def playerEv(event: Event, player: Player): Unit = {
       event match {
         case event: PlayerInteractEvent =>
           if (event.hasBlock && event.getClickedBlock.getType == Material.SIGN_POST) {

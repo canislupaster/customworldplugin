@@ -1,7 +1,7 @@
 package scala.com.thomas.customworld.commands.home
 
 import scala.com.thomas.customworld.commands.base.CommandPart
-import scala.com.thomas.customworld.commands.base.{PermissionCommand, PlayerCommand}
+import scala.com.thomas.customworld.commands.base.PermissionCommand
 import scala.com.thomas.customworld.db.{DBConstructor, HomeDB}
 import scala.com.thomas.customworld.messaging._
 import scala.com.thomas.customworld.util._

@@ -81,7 +81,7 @@ package object freeop {
   case class FreeOPPlayer(cfg:FileConfiguration) extends PlayerType {
     override def extraPerms: Set[String] = rank.rankCfg("freeop", cfg)
 
-    override def playerEv[Event <: Cancellable](event: Event, player: Player): Unit = {
+    override def playerEv(event: Event, player: Player): Unit = {
       event match {
         case e: BlockBreakEvent => protect(e, player)
         case e: BlockPlaceEvent => protect(e, player)

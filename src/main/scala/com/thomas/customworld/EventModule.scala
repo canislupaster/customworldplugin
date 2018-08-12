@@ -10,7 +10,7 @@ trait EventModule {
   def leave (player: Player): Unit = {}
   def reset (player: Player): Unit = {}
   def ev (event: Event): Unit = {}
-  def playerEv[Event <: Cancellable] (event: Event, player:Player): Unit = {}
+  def playerEv (event: Event, player:Player): Unit = {}
   def enable (plugin:Plugin): Unit = {}
   def disable (plugin:Plugin): Unit = {}
 }

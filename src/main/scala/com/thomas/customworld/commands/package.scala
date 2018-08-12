@@ -48,12 +48,15 @@ package object commands {
     plugin.getCommand("unmute").setExecutor(new MuteCommand(false))
 
     plugin.getCommand("jumppad").setExecutor(new JumppadCommand(cfg))
+    plugin.getCommand("speed").setExecutor(new SpeedCommand())
 
     plugin.getCommand("build").setExecutor(new BuildCommand())
     plugin.getCommand("makebuild").setExecutor(new MakeBuildCommand(cfg))
     plugin.getCommand("delbuild").setExecutor(new DelBuildCommand())
     plugin.getCommand("maketheme").setExecutor(new MakeThemeCommand())
     plugin.getCommand("vote").setExecutor(new VoteCommand())
+    plugin.getCommand("expandbuild").setExecutor(new ExpandBuildCommand(cfg))
+    plugin.getCommand("renamebuild").setExecutor(new RenameBuildCommand())
     //TODO: SPEED
   }
 }

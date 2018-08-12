@@ -71,16 +71,15 @@ object CustomCore {
     event match {
       case event: PlayerJoinEvent =>
         mod (_.join(event.getPlayer))
-        event.setJoinMessage(PlayerJoinMessage(join=true, GetTag(event.getPlayer), event.getPlayer.getName).renderMessage)
+        event.setJoinMessage(PlayerJoinMessage(join=true, GetTag(event.getPlayer), event.getPlayer.getName).formattedText)
 
       case event: PlayerQuitEvent =>
-        event.setQuitMessage(PlayerJoinMessage(join=false, GetTag(event.getPlayer), event.getPlayer.getName).renderMessage)
+        event.setQuitMessage(PlayerJoinMessage(join=false, GetTag(event.getPlayer), event.getPlayer.getName).formattedText)
         mod (_.leave(event.getPlayer))
 
       case event: PlayerEvent with Cancellable =>
         mod (_.playerEv(event, event.getPlayer))
         event match {
-          case event: PlayerTeleportEvent =>
           case event: PlayerTeleportEvent =>
             player.getPlayer(event.getPlayer).beforeTp = Some(event.getFrom)
 
@@ -101,7 +100,7 @@ object CustomCore {
           case event: AsyncPlayerChatEvent =>
             if (event.getPlayer.hasPermission("talk")) {
               event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage))
-              event.setFormat(PlayerMessage(GetTag(event.getPlayer), event.getPlayer).renderMessage)
+              event.setFormat(PlayerMessage(GetTag(event.getPlayer), event.getPlayer).formattedText)
             } else {
               ErrorMsg("muted") sendClient event.getPlayer
               event.setCancelled(true)
@@ -110,9 +109,10 @@ object CustomCore {
           case _ => ()
         }
 
-      case event: VehicleEvent with Cancellable =>
-        event.getVehicle.getPassengers.asScala.toList.find(_.isInstanceOf[Player]) map (_.asInstanceOf[Player]) match {
-          case Some(x) => mod (_.playerEv(event, x)); case _ => ()
+      case event: VehicleEvent =>
+        event.getVehicle.getPassengers.asScala foreach {
+          case x:Player => mod (_.playerEv(event, x)); case _ => ()
+          case _ => ()
         }
 
       case event: BlockBreakEvent => mod (_.playerEv(event, event.getPlayer))

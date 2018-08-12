@@ -5,12 +5,10 @@ import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
 import scala.com.thomas.customworld.util._
 
-class MakeThemeCommand extends PermissionCommand("theme") {
-  override def commandPart: CommandPart = (sender, cmd, _, args) => {
+class MakeThemeCommand extends PermissionCommand("theme", (sender, cmd, _, args) => {
     args match {
       case Array(TimeParser(start),TimeParser(end), name) =>
         if (new BuildDB().autoClose(_.addTheme(name, start, end)) > 0) SomeArr(SuccessMsg) else SomeArr(ErrorMsg("alreadyexists"))
       case _ => None
     }
-  }
-}
+  })

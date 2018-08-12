@@ -9,8 +9,7 @@ import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 import scala.com.thomas.customworld.util.SomeArr
 
-class SmiteCommand extends PermissionCommand("smite") {
-  override def commandPart: CommandPart = (sender, cmd, label, args) => {
+class SmiteCommand extends PermissionCommand("smite", (sender, cmd, label, args) => {
       args.toList match {
         case OnlinePlayerArg(tplayer: Player) :: x if x.nonEmpty =>
           player.joinFreeOP(tplayer)
@@ -25,5 +24,4 @@ class SmiteCommand extends PermissionCommand("smite") {
         case _ :: _ => SomeArr(ErrorMsg("invalidarg"))
         case _ => None
       }
-    }
-}
+    })

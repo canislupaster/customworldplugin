@@ -1,7 +1,6 @@
 package scala.com.thomas.customworld.commands.home
 
 import scala.com.thomas.customworld.commands.base.CommandPart
-import scala.com.thomas.customworld.commands.base.PlayerCommand
 import scala.com.thomas.customworld.db.{DBConstructor, HomeDB}
 import scala.com.thomas.customworld.messaging._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
