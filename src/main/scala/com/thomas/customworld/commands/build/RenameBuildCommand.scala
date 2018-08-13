@@ -7,7 +7,7 @@ import scala.com.thomas.customworld.commands.base.{CommandPart, PermissionComman
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
 import scala.com.thomas.customworld.player.freeop
-import scala.com.thomas.customworld.util.{SomeArr, spaceJoin, toUUID}
+import scala.com.thomas.customworld.utility.{SomeArr, spaceJoin, toUUID}
 
 class RenameBuildCommand extends PermissionCommand("build", base.PlayerCommand((sender, cmd, _, args) => {
   val player = sender.asInstanceOf[Player]

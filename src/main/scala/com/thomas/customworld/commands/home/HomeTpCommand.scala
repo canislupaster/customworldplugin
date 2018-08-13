@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 
 import scala.com.thomas.customworld.commands.base
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import scala.com.thomas.customworld.commands.home.{Home, HomeCommand}
 
 class HomeTpCommand extends PermissionCommand("home", base.PlayerCommand((player, cmd, name, args) => {

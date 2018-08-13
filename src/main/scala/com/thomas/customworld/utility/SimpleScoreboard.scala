@@ -1,4 +1,4 @@
-package scala.com.thomas.customworld.util
+package scala.com.thomas.customworld.utility
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

@@ -6,7 +6,7 @@ import java.util.UUID
 
 import scala.com.thomas.customworld.{EventModule, player}
 import scala.com.thomas.customworld
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.{ChatColor, GameMode, Location}
 import org.bukkit.entity.{Entity, Player}
 import org.bukkit.inventory.{Inventory, ItemStack}

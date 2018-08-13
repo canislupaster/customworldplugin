@@ -1,7 +1,7 @@
 package scala.com.thomas.customworld.commands.util
 
 import scala.com.thomas.customworld.commands.base.PermissionCommand
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import scala.com.thomas.customworld.commands.base._
 import scala.com.thomas.customworld.messaging.SuccessMsg
 

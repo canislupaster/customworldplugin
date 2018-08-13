@@ -25,7 +25,7 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
-package object util {
+package object utility {
   def QuoteSurround (str:AnyRef) :String = {
     val replaced = str.toString replaceAll("""\\""", """\""") replaceAll("%", """\%""") replaceAll("_", """\_""") replaceAll("""\[""", """\[""")
     '"' + replaced + '"'

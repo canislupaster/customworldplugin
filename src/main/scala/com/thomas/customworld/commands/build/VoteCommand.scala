@@ -6,7 +6,7 @@ import scala.com.thomas.customworld.commands.base
 import scala.com.thomas.customworld.commands.base.{CommandPart, OfflinePlayerArg, PermissionCommand}
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, Message, SuccessMsg}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class VoteCommand extends PermissionCommand("build", base.PlayerCommand((player, cmd, name, args) => {
     args match {

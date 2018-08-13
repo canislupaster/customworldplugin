@@ -8,7 +8,7 @@ import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, Message, SuccessMsg}
 import scala.com.thomas.customworld.player.freeop
 import scala.com.thomas.customworld.player.freeop.ProtectedRegion
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class ExpandBuildCommand(cfg:FileConfiguration) extends BuildOperationCommand((build, player, db, args) => {
   getSelection(player) match {

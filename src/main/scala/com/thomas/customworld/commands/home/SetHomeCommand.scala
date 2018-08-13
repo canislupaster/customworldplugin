@@ -7,7 +7,7 @@ import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
 import scala.util.matching.Regex
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 import scala.com.thomas.customworld.commands.home.{Home, HomeCommand}
 

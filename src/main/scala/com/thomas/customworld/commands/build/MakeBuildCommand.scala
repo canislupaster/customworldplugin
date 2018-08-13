@@ -10,7 +10,7 @@ import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.player.freeop
 import scala.com.thomas.customworld.player.freeop.ProtectedRegion
 import scala.com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class MakeBuildCommand(cfg:FileConfiguration) extends PermissionCommand("build",
   base.PlayerCommand((player, cmd, _, args) => {
@@ -22,7 +22,7 @@ class MakeBuildCommand(cfg:FileConfiguration) extends PermissionCommand("build",
         val newname:String = themeid match {case Some(_) => name; case _ => spaceJoin(theme::namearr)}
         if (newname.isEmpty) SomeArr(ErrorMsg("noname"))
         else {
-          val region = new Box(x)
+          val region = new Box(x) setY 0
           freeop.protectedRegions find (_.region.intersectXZ(region)) match {
             case Some (_) => SomeArr(ErrorMsg("tooclose"))
             case None =>

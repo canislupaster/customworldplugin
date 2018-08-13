@@ -3,30 +3,23 @@ package scala.com.thomas.customworld.commands.mod.ip
 import scala.com.thomas.customworld.db.{DBConstructor, IpDB, MuteDB}
 import scala.com.thomas.customworld.messaging._
 import scala.com.thomas.customworld.player
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
-class VerifyIpCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    (sender, args) match {
-      case (x:Player, _) if !x.hasPermission("manageips") => false
-      case (_, Array(i:String)) =>
-        sender.getServer.getPlayer(i) match {
-          case x:Player =>
-            new IpDB().autoClose (y => y.addIp(x.getUniqueId, x.getAddress.getAddress.getHostAddress) match {
-              case 0 => ErrorMsg("alreadyexists")
-              case _ =>
-                InfoMsg (RuntimeMsg(x.getName), ConfigMsg("verified"), RuntimeMsg(sender.getName)) globalBroadcast sender.getServer
+import scala.com.thomas.customworld.commands.base.{OnlinePlayerArg, PermissionCommand}
 
-                player.getPlayer(x) verify x
-                SuccessMsg
-            }) sendClient sender
-          case _ => ErrorMsg("noplayer") sendClient sender
-        }
+class VerifyIpCommand extends PermissionCommand("manageips", (sender,cmd, label, args) => {
+    args match {
+      case Array(OnlinePlayerArg(x)) =>
+        new IpDB().autoClose (y => y.addIp(x.getUniqueId, x.getAddress.getAddress.getHostAddress) match {
+          case 0 => SomeArr(ErrorMsg("alreadyexists"))
+          case _ =>
+            InfoMsg (RuntimeMsg(x.getName), ConfigMsg("verified"), RuntimeMsg(sender.getName)) globalBroadcast sender.getServer
 
-        true
-      case _ => false
+            player.getPlayer(x) verify x
+            SomeArr(SuccessMsg)
+        })
+      case _ => None
     }
-  }
-}
+  })

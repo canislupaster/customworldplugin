@@ -4,7 +4,7 @@ main: com.thomas.customworld.CustomCoreJava
 description: CustomWorld's main plugin.
 authors: [Thomas Marlowe]
 website: https://github.com/Thomas-QM/customworldplugin
-depend: [FastAsyncWorldEdit, WorldEdit]
+depend: [FastAsyncWorldEdit, WorldEdit, DiscordSRV]
 softdepend: []
 loadbefore: []
 permissions:
@@ -62,6 +62,8 @@ permissions:
     description: Change speed
   setothergamemode:
     description: Set others' gamemodes.
+  clear:
+    description: Clear own inventory
 
 commands:
   rank:
@@ -180,3 +182,18 @@ commands:
     description: Change your speed
     aliases: []
     usage: /speed [fly|walk] amount
+  gms:
+    description: Change to survival
+    usage: /gms
+  gma:
+    description: Change to adventure
+    usage: /gma
+  gmc:
+    description: Change to creative
+    usage: /gmc
+  gmsp:
+    description: Change to spectator
+    usage: /gmsp
+  clear:
+    description: Clear inventory
+    usage: /clear

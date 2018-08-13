@@ -54,6 +54,8 @@ package object configuration {
       "lang.loading" -> "Please wait...",
       "lang.reloadbot" -> "Bot is not initialized, please restart server.",
       "lang.toolong" -> "Please use a shorter name!",
+      "lang.nocmd" -> "Unknown command.",
+      "lang.usage" -> "Usage:",
 
       "lang.help" ->
         """

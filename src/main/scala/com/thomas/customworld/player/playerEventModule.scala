@@ -8,7 +8,7 @@ import org.bukkit.event.{Cancellable, Event}
 import scala.com.thomas.customworld.CustomCore.GetTag
 import scala.com.thomas.customworld.EventModule
 import scala.com.thomas.customworld.messaging.PlayerJoinMessage
-import scala.com.thomas.customworld.util.toUUID
+import scala.com.thomas.customworld.utility.toUUID
 
 object playerEventModule extends EventModule {
   override def playerEv(event: Event, player: Player): Unit = {

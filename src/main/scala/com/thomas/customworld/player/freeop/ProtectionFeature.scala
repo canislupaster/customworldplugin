@@ -10,7 +10,7 @@ import com.boydti.fawe.wrappers
 import com.sk89q.worldedit.Vector2D
 import com.sk89q.worldedit.regions.{CuboidRegion, Region}
 
-import scala.com.thomas.customworld.util.{Box, toUUID}
+import scala.com.thomas.customworld.utility.{Box, toUUID}
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import com.sk89q.worldedit.Vector

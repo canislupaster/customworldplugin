@@ -6,7 +6,7 @@ import scala.com.thomas.customworld.player
 import scala.com.thomas.customworld.player.rank
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class RankCommand extends CommandExecutor {
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {

@@ -3,7 +3,7 @@ package scala.com.thomas.customworld.commands.build
 import scala.com.thomas.customworld.commands.base.{CommandPart, PermissionCommand}
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, SuccessMsg}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class MakeThemeCommand extends PermissionCommand("theme", (sender, cmd, _, args) => {
     args match {

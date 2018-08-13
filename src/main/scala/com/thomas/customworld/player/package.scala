@@ -16,7 +16,7 @@ import scala.com.thomas.customworld.player.freeop.FreeOPPlayer
 import scala.com.thomas.customworld.messaging.{ConfigMsg, ErrorMsg, InfoMsg}
 import scala.com.thomas.customworld.minigame.{Minigame, MinigamePlayerData}
 import scala.com.thomas.customworld.player.rank.{Muted, Rank, Regular}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.event.{Cancellable, Event}
 
 import scala.collection.mutable

@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import scala.com.thomas.customworld.CustomCore._
 import scala.com.thomas.customworld.db.{IpDB, MuteDB}
 import scala.com.thomas.customworld.messaging.{ConfigMsg, ErrorMsg, InfoMsg, RuntimeMsg}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.{Cancellable, Event}

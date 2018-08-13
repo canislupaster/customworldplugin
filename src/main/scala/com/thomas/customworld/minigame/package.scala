@@ -6,7 +6,7 @@ import java.util.UUID
 import com.boydti.fawe.`object`.schematic.Schematic
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 
-import scala.com.thomas.customworld.util.Box
+import scala.com.thomas.customworld.utility.Box
 import org.bukkit.{ChatColor, Location, Material}
 import org.bukkit.block.{BlockState, Sign}
 import org.bukkit.entity.Player
@@ -14,7 +14,7 @@ import org.bukkit.event.{Cancellable, Event}
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerMoveEvent}
 import org.bukkit.plugin.Plugin
 
-import scala.com.thomas.customworld.util.WEVec
+import scala.com.thomas.customworld.utility.WEVec
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 

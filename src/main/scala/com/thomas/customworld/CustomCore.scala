@@ -14,11 +14,12 @@ import org.bukkit.block.Sign
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit._
 import org.bukkit.entity.{EntityType, Player}
+import org.bukkit.event.hanging.HangingBreakByEntityEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.event.vehicle._
 
 import scala.collection.JavaConverters._
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.event.{Cancellable, Event, player}
 
 import scala.com.thomas.customworld.minigame.minigameEventModule
@@ -100,12 +101,12 @@ object CustomCore {
           case event: AsyncPlayerChatEvent =>
             if (event.getPlayer.hasPermission("talk")) {
               event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage))
-              event.setFormat(PlayerMessage(GetTag(event.getPlayer), event.getPlayer).formattedText)
+              PlayerMessage(GetTag(event.getPlayer), event.getPlayer, event.getMessage) globalBroadcast server
             } else {
               ErrorMsg("muted") sendClient event.getPlayer
-              event.setCancelled(true)
             }
 
+            event.setCancelled(true)
           case _ => ()
         }
 
@@ -117,6 +118,10 @@ object CustomCore {
 
       case event: BlockBreakEvent => mod (_.playerEv(event, event.getPlayer))
       case event: BlockPlaceEvent => mod (_.playerEv(event, event.getPlayer))
+      case event: HangingBreakByEntityEvent => event.getRemover match {
+        case player:Player => mod (_.playerEv(event, player))
+        case _ => ()
+      }
 
       case event: EntityEvent with Cancellable if event.getEntityType == EntityType.PLAYER =>
         val player = event.getEntity.asInstanceOf[Player]
@@ -143,6 +148,11 @@ object CustomCore {
             }
           case _ => ()
         }
+
+      case event: EntityDamageByEntityEvent => event.getDamager match {
+        case player:Player => mod (_.playerEv(event, player))
+        case _ => ()
+      }
 
       case event: PlayerLoginEvent =>
         val db = new PlayerDB()

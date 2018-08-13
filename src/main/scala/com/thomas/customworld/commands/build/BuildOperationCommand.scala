@@ -6,7 +6,7 @@ import scala.com.thomas.customworld.commands.base
 import scala.com.thomas.customworld.commands.base.{CommandPart, PermissionCommand}
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{ErrorMsg, Message, SuccessMsg}
-import scala.com.thomas.customworld.util.{SomeArr, spaceJoin, toUUID}
+import scala.com.thomas.customworld.utility.{SomeArr, spaceJoin, toUUID}
 
 class BuildOperationCommand(op: (Build, Player, BuildDB, List[String]) => Option[Array[Message]]) extends PermissionCommand("build",
   base.PlayerCommand((player, cmd, _, args) => {

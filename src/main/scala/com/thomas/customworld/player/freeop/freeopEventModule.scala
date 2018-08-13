@@ -12,7 +12,7 @@ import scala.collection.mutable
 import scala.com.thomas.customworld.EventModule
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.player.freeop
-import scala.com.thomas.customworld.util.Box
+import scala.com.thomas.customworld.utility.Box
 
 object freeopEventModule extends EventModule { //not caused by player events
   override def ev(event: Event): Unit = {

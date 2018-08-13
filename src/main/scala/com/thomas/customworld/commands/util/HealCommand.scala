@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffect
 
 import scala.collection.JavaConverters._
 import scala.com.thomas.customworld.commands.base
-import scala.com.thomas.customworld.util.SomeArr
+import scala.com.thomas.customworld.utility.SomeArr
 
 class HealCommand extends PermissionCommand("heal", base.PlayerCommand((sender, command, label, args) => {
     val player:Player = sender.asInstanceOf[Player]

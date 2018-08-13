@@ -12,7 +12,7 @@ import scala.com.thomas.customworld.commands.base._
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.messaging.{PageMsg, _}
 import scala.com.thomas.customworld.player
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class BuildCommand extends PermissionCommand("build", (sender, cmd, name, args) => {
   val db = new BuildDB()
@@ -42,27 +42,28 @@ class BuildCommand extends PermissionCommand("build", (sender, cmd, name, args) 
     case Array("themes") => msgs(Array("themes", "1"))
     case Array("list", x) => msgs(Array("list", x, "1"))
     case _ =>
-      val player = Option(sender.asInstanceOf[Player])
-      player flatMap (player => {
-        args.toList match {
-          case "tp" :: OfflinePlayerArg(buildplayer) :: buildname if buildname.nonEmpty =>
-            new BuildDB().autoClose(_.getBuildByName(buildplayer.playerid, spaceJoin(buildname))) match {
-              case Some(x) =>
-                val loc = x.region.getCenter.add(0, 10, 0)
-                player.teleport(new Location(x.region bworld, loc.getBlockX, loc.getBlockY, loc.getBlockZ))
-                SomeArr(InfoMsg(ConfigMsg("tpto"), RuntimeMsg(spaceJoin(buildname))))
-              case None => SomeArr(ErrorMsg("nobuild"))
-            }
-          case "in" :: _ =>
-            val msg = new BuildDB().autoClose(_.inBuild(player.getLocation.getBlockX, player.getLocation.getBlockZ)) match {
-              case Some(x) => InfoMsg(ConfigMsg("in"), BuildMessage(x))
-              case None => ErrorMsg("nobuild")
-            }
+      sender match {
+        case player:Player =>
+          args.toList match {
+            case "tp" :: OfflinePlayerArg(buildplayer) :: buildname if buildname.nonEmpty =>
+              new BuildDB().autoClose(_.getBuildByName(buildplayer.playerid, spaceJoin(buildname))) match {
+                case Some(x) =>
+                  val loc = x.region.getCenter.add(0, 10, 0)
+                  player.teleport(new Location(x.region bworld, loc.getBlockX, loc.getBlockY, loc.getBlockZ))
+                  SomeArr(InfoMsg(ConfigMsg("tpto"), RuntimeMsg(spaceJoin(buildname))))
+                case None => SomeArr(ErrorMsg("nobuild"))
+              }
+            case "in" :: _ =>
+              val msg = new BuildDB().autoClose(_.inBuild(player.getLocation.getBlockX, player.getLocation.getBlockZ)) match {
+                case Some(x) => InfoMsg(ConfigMsg("in"), BuildMessage(x))
+                case None => ErrorMsg("nobuild")
+              }
 
-            SomeArr(msg)
-          case _ => None
-        }
-      })
+              SomeArr(msg)
+            case _ => None
+          }
+        case _ => None
+      }
   }
 
   val msg = msgs(args)

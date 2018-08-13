@@ -5,26 +5,19 @@ import scala.com.thomas.customworld.messaging.{ErrorMsg, PunishMsg, SuccessMsg}
 import scala.com.thomas.customworld.player
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
-import scala.com.thomas.customworld.util._
 
-class KickCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    (sender, args.toList) match {
-      case (x:Player,_) if !x.hasPermission("ban") => false
-      case (_,playername::reason) =>
-        (sender.getServer.getPlayer(playername) match {
-          case x:Player =>
-            val r = spaceJoin(reason)
+import scala.com.thomas.customworld.commands.base.{OnlinePlayerArg, PermissionCommand}
+import scala.com.thomas.customworld.utility._
 
-            PunishMsg (x, sender, "kicked", r) globalBroadcast sender.getServer
-            x.kickPlayer(r)
+class KickCommand extends PermissionCommand("kick", (sender, cmd, label, args) => {
+    args.toList match {
+      case OnlinePlayerArg(x)::reason =>
+        val r = spaceJoin(reason)
 
-            SuccessMsg
-          case _ => ErrorMsg("noplayer")
-        }) sendClient sender
+        PunishMsg (x, sender, "kicked", r) globalBroadcast sender.getServer
+        x.kickPlayer(r)
 
-        true
-      case _ => false
+        SomeArr(SuccessMsg)
+      case _ => None
     }
-  }
-}
+  })

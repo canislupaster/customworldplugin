@@ -8,7 +8,7 @@ import scala.com.thomas.customworld.player
 import org.bukkit.entity.Player
 import scala.com.thomas.customworld.player._
 
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import scala.com.thomas.customworld.EventModule
 import scala.com.thomas.customworld.player.rank
 

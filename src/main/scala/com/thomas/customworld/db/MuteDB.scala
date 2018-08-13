@@ -3,7 +3,7 @@ package scala.com.thomas.customworld.db
 import java.sql.{Connection, Date, Timestamp}
 import java.util.UUID
 
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import com.github.takezoe.scala.jdbc._
 import scala.com.thomas.customworld.player.mute.Mute
 

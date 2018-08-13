@@ -4,7 +4,7 @@ import org.bukkit.GameMode
 
 import scala.com.thomas.customworld.commands.base._
 import scala.com.thomas.customworld.messaging.SuccessMsg
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class GamemodeCommand(gamemode:GameMode) extends PermissionCommand("gamemode", PlayerCommand((sender, cmd, str, args) => {
   args match {

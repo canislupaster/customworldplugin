@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import scala.com.thomas.customworld.commands.base
 import scala.com.thomas.customworld.commands.base._
 import scala.com.thomas.customworld.player.nick.nickEventModule
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 
 class NickCommand() extends PermissionCommand("nick", PlayerCommand ((player, cmd, _, args) => {
   val nick = spaceJoin(args toList) match {case x if x.length==0 => None; case x => Some(x);}

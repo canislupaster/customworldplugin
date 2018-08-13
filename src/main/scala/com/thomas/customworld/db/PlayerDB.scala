@@ -5,9 +5,9 @@ import java.sql.{Connection, ResultSet}
 import com.github.takezoe.scala.jdbc._
 import scala.com.thomas.customworld.player.{CustomPlayer, rank}
 import scala.com.thomas.customworld.player.rank.Rank
-import scala.com.thomas.customworld.util
+import scala.com.thomas.customworld.utility
 import org.bukkit.entity.Player
-import scala.com.thomas.customworld.util.UUID
+import scala.com.thomas.customworld.utility.UUID
 
 class PlayerDB() extends MainDB() {
   def assembleplayer (sql:SqlTemplate): Option[CustomPlayer] = {data.selectFirst(sql) { x =>

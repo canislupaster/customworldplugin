@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -62,6 +64,12 @@ public class CustomCoreJava extends JavaPlugin implements Listener {
     public void onInteract (PlayerInteractEvent event) { CustomCore.ev(event); }
     @EventHandler
     public void onInteractEntity (PlayerInteractEntityEvent event) { CustomCore.ev(event); }
+    @EventHandler
+    public void onInteractAtEntity (PlayerInteractAtEntityEvent event) { CustomCore.ev(event); }
+    @EventHandler
+    public void onHangingBreakByEntity (HangingBreakByEntityEvent event) { CustomCore.ev(event); }
+    @EventHandler
+    public void onHangingBreak (HangingBreakEvent event) { CustomCore.ev(event); }
 
     @EventHandler
     public void onAttack (EntityDamageByEntityEvent event) { CustomCore.ev(event); }

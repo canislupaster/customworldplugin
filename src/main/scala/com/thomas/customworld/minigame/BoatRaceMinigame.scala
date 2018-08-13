@@ -7,7 +7,7 @@ import com.boydti.fawe.util.EditSessionBuilder
 import com.sk89q.worldedit.blocks.{BaseBlock, BlockType}
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
 import com.sk89q.worldedit.function.pattern.{Pattern, RandomPattern}
-import scala.com.thomas.customworld.util.Box
+import scala.com.thomas.customworld.utility.Box
 import org.bukkit
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity

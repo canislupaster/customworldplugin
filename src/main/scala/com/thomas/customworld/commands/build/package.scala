@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import scala.com.thomas.customworld.db.BuildDB
 import scala.com.thomas.customworld.player
 import scala.com.thomas.customworld.player.freeop.ProtectedRegion
-import scala.com.thomas.customworld.util.{Box, UUID, spaceJoin, toUUID}
+import scala.com.thomas.customworld.utility.{Box, UUID, spaceJoin, toUUID}
 
 package object build {
   case class Theme(themeId:Long, name:String, timeStarting:Timestamp, timeEnding:Timestamp)

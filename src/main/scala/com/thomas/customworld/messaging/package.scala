@@ -3,6 +3,8 @@ package scala.com.thomas.customworld
 import java.sql.Timestamp
 import java.text.{DateFormat, SimpleDateFormat}
 
+import github.scarsz.discordsrv.DiscordSRV
+import github.scarsz.discordsrv.dependencies.jda.core.entities.MessageChannel
 import net.md_5.bungee.api.chat._
 
 import scala.com.thomas.customworld.commands.home.Home
@@ -12,12 +14,12 @@ import org.bukkit.Server
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import net.md_5.bungee.api.ChatColor._
-import sx.blah.discord.handle.obj.{IChannel, IMessage}
 
 import scala.com.thomas.customworld.commands.base
 import scala.com.thomas.customworld.commands.build.{Build, Theme}
 import scala.com.thomas.customworld.db.{BuildDB, PlayerDB}
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.discord.DiscordCommandSender
+import scala.com.thomas.customworld.utility._
 
 package object messaging {
   var langcfg:Any = _
@@ -31,9 +33,10 @@ package object messaging {
   }
 
   def dateformat(time:Timestamp): String = new SimpleDateFormat("MMM dd, yyyy").format(time)
+  def premsg: String = LoadMessage("prefix") + " "
+  def plainpremsg = new TextComponent(premsg).toPlainText
 
   trait Message {
-    def premsg: String = LoadMessage("prefix") + " "
 
     def renderMessage: ComponentBuilder = {
       val pre = new ComponentBuilder(premsg)
@@ -46,18 +49,20 @@ package object messaging {
           premsg + "§a" + LoadMessage("success")
           pre.append(LoadMessage("success")).color(GREEN)
         case x: InfoMsg =>
-          x.list.foldRight(pre)((x,y) => y.append(x.renderMessage.color(YELLOW).create()))
+          x.list.foldLeft(pre)((y,x) => y.append(x.renderMessage.color(YELLOW).append(" ").create()))
         case HomeMessage(Home(name, world, x, y, z)) =>
-          new ComponentBuilder("$name: $x,$y,$z").color(YELLOW)
-        case PlayerMessage(tag, username) =>
-          val name = if (username.getDisplayName == username.getName) "%s" else s"%s §8aka ${username.getName}"
+          blank.append(s"$name: $x,$y,$z").color(YELLOW).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/home $name")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to teleport!").create()))
+        case PlayerMessage(tag, username, msg) =>
+          val name = if (username.getDisplayName == base.stripName(username.getName))
+            new ComponentBuilder({username.getDisplayName}) else
+            new ComponentBuilder(username.getDisplayName).append(s" aka ${username.getName}").color(DARK_GRAY)
 
           blank.append("[").color(AQUA).append(tag.Tag).append("] ").color(AQUA)
-          .append(name).color(GOLD).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(username.getName).create()))
-          .append(": ").color(GRAY).append("%s").color(WHITE)
+          .append(name.create()).color(GOLD).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(username.getName).create()))
+          .append(": ").color(GRAY).append(msg).color(WHITE)
         case PlayerJoinMessage(join, tag, username) =>
           val joinpre = if (join) "+" else "-"
-          pre.append(joinpre).color(YELLOW).append("[").color(AQUA).append(tag.Tag).append("]").color(AQUA).append(username)
+          blank.append(joinpre).color(YELLOW).append(" [").color(AQUA).append(tag.Tag).append("] ").color(AQUA).append(username).color(GOLD)
         case CommandMessage(u, cmd) =>
           pre.append(u).color(GOLD).append(" has executed ").color(YELLOW).append(cmd).color(GOLD)
         case BuildMessage(build) =>
@@ -65,18 +70,19 @@ package object messaging {
           val uname = new PlayerDB().autoClose(_.getPlayer(pid)).username
           val points = new BuildDB().autoClose(_.getVotes(build)) map (_._2)
           val themecomponent = theme match {
-              case Some(x) => new ComponentBuilder(s" for ").append(x.name).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build list ${x.name}")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to check out other builds for this theme!").create()))
+              case Some(x) => new ComponentBuilder(s" for ").color(YELLOW).append(x.name).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build list ${x.name}")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to check out other builds for this theme!").create()))
+                                .append(" ")
               case None => new ComponentBuilder(" ")
             }
-          newln.append(build.buildName)
-            .append("made by ").color(YELLOW)
+          blank.append(build.buildName).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build tp $uname ${build.buildName}")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to teleport to this build!").create()))
+            .append(" made by ").color(YELLOW)
             .append(uname).color(GOLD).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build list $uname")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to check out his other builds!").create()))
             .append(themecomponent.create()).color(GOLD)
-            .append(" at ").color(YELLOW).append(dateformat(build.timeCreated)).color(GOLD)
+            .append("at ").color(YELLOW).append(dateformat(build.timeCreated)).color(GOLD)
             .append(": ").color(YELLOW).append(points.sum.toString).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, s"/vote 5 $uname ${build.buildName}")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()))
         case ThemeMessage(Theme(_, name, starting, ending)) =>
           val color = if (Now().after(ending)) DARK_GRAY else YELLOW
-          newln.append(s"$name: ${dateformat(starting)} - ${dateformat(ending)}").color(color).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build list $name")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to check out builds for this theme!").create()))
+          blank.append(s"$name: ${dateformat(starting)} - ${dateformat(ending)}").color(color).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s"/build list $name")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to check out builds for this theme!").create()))
         case PunishMsg(punished, punisher, punishment, reason) =>
           pre.append(punished.getName).color(GOLD).append(s" was $punishment by ${punisher.getName} for ").color(YELLOW).append(reason).color(YELLOW)
         case PageMsg(Paginator(x, _)) => pre.append(LoadMessage("page")).color(YELLOW).append(": ").color(YELLOW).append(x.toString).color(GOLD)
@@ -87,14 +93,17 @@ package object messaging {
       }
     }
 
-    def discordMessage (channel:IChannel): IMessage = {
-      channel.sendMessage(plainText)
+    def discordMessage (channel:MessageChannel): Unit = {
+      channel.sendMessage(this.plainText stripPrefix plainpremsg).queue()
     }
 
 
     def sendClient (client:CommandSender): Unit = {
       val msg = this.renderMessage.create() reduce ((x,y) => {x.addExtra(y); x})
-      client.spigot().sendMessage(msg)
+      client match {
+        case x:DiscordCommandSender => discordMessage(x.getChannel)
+        case _ => client.spigot().sendMessage(msg)
+      }
     }
 
     def formattedText = {
@@ -110,7 +119,10 @@ package object messaging {
       server.getOnlinePlayers.toArray filter ((x:AnyRef) => playerfilter(x.asInstanceOf[Player])) foreach ((x:AnyRef) => this.sendClient(x.asInstanceOf[Player]))
     }
 
-    def globalBroadcast: Server => Unit = broadCast(_ => true)
+    def globalBroadcast: Server => Unit = {
+      DiscordSRV.getPlugin.getMainTextChannel match {case null => (); case x => discordMessage(x)}
+      broadCast(_ => true)
+    }
   }
 
   case class ConfigMsg(msg:String) extends Message
@@ -120,7 +132,7 @@ package object messaging {
   case object SuccessMsg extends Message
   case class InfoMsg (msg :Message*) extends Message { val list: List[Message] = msg.toList }
 
-  case class PlayerMessage (tag :Rank, player :Player) extends Message
+  case class PlayerMessage (tag :Rank, player :Player, msg:String) extends Message
   case class PlayerJoinMessage (join:Boolean, tag :Rank, username :String) extends Message
 
   case class HomeMessage (home: Home) extends Message

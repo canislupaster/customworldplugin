@@ -1,12 +1,14 @@
 package com.thomas.customworld;
 
+import github.scarsz.discordsrv.api.ListenerPriority;
+import github.scarsz.discordsrv.api.Subscribe;
+import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
+import org.bukkit.Bukkit;
 import scala.com.thomas.customworld.discord.DiscordBot;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class DiscordBotJava {
-    @EventSubscriber
-    public void onMessageReceivedEvent(MessageReceivedEvent event) { // This method is NOT called because it doesn't have the @EventSubscriber annotation
+    @Subscribe(priority = ListenerPriority.MONITOR)
+    public void discordMessageReceived(DiscordGuildMessageReceivedEvent event) {
         DiscordBot.evDiscord(event);
     }
 }

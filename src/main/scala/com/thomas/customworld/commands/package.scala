@@ -1,6 +1,7 @@
 package scala.com.thomas.customworld
 
 import com.thomas.customworld.CustomCoreJava
+import org.bukkit.GameMode
 
 import scala.com.thomas.customworld.commands.home.{DelHomeCommand, HomeTpCommand, SetHomeCommand}
 import scala.com.thomas.customworld.commands.mod.ip.{ClearIpsCommand, VerifyIpCommand}
@@ -57,6 +58,11 @@ package object commands {
     plugin.getCommand("vote").setExecutor(new VoteCommand())
     plugin.getCommand("expandbuild").setExecutor(new ExpandBuildCommand(cfg))
     plugin.getCommand("renamebuild").setExecutor(new RenameBuildCommand())
-    //TODO: SPEED
+
+    plugin.getCommand("gmsp").setExecutor(new GamemodeCommand(GameMode.SPECTATOR))
+    plugin.getCommand("gma").setExecutor(new GamemodeCommand(GameMode.ADVENTURE))
+    plugin.getCommand("gmc").setExecutor(new GamemodeCommand(GameMode.CREATIVE))
+    plugin.getCommand("gms").setExecutor(new GamemodeCommand(GameMode.SURVIVAL))
+    plugin.getCommand("clear").setExecutor(new ClearCommand())
   }
 }

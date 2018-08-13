@@ -30,7 +30,7 @@
           </execution>
         </executions>
         <configuration>
-          <minimizeJar>false</minimizeJar>
+          <minimizeJar>true</minimizeJar>
           <filters>
             <filter>
               <artifact>*:*</artifact>
@@ -108,8 +108,21 @@
       <id>sk89q-repo</id>
       <url>http://maven.sk89q.com/repo/</url>
     </repository>
+    <repository>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <id>Scarsz-Jenkins</id>
+      <url>http://ci.scarsz.me/plugin/repository/everything/</url>
+    </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>github.scarsz.discordsrv</groupId>
+      <artifactId>DiscordSRV</artifactId>
+      <version>1.16.3</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>

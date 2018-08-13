@@ -8,7 +8,7 @@ import org.bukkit.util.BlockVector
 
 import scala.com.thomas.customworld.CustomCore
 import scala.com.thomas.customworld.commands.build.{Build, Theme}
-import scala.com.thomas.customworld.util.{Box, Paginator, UUID}
+import scala.com.thomas.customworld.utility.{Box, Paginator, UUID}
 
 class BuildDB extends MainDB {
   def assembletheme (x:ResultSet): Theme = {

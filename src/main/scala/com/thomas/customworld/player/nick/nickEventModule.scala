@@ -3,7 +3,7 @@ package scala.com.thomas.customworld.player.nick
 import scala.com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import org.bukkit.entity.Player
 
-import scala.com.thomas.customworld.util._
+import scala.com.thomas.customworld.utility._
 import org.bukkit.ChatColor
 
 import scala.com.thomas.customworld.EventModule

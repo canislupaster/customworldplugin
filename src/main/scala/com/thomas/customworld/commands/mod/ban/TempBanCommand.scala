@@ -9,30 +9,23 @@ import scala.com.thomas.customworld.player
 import scala.com.thomas.customworld.player.ip.IpBan
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
-import scala.com.thomas.customworld.util._
 
-class TempBanCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    (sender, args.toList) match {
-      case (x:Player,_) if !x.hasPermission("tempban") => false
-      case (_, playername::TimeParser(time)::reason) =>
-        (new PlayerDB().autoClose(x => x.getPlayerFromName(playername)) match {
-          case Some(x) =>
-            val r = spaceJoin(reason)
+import scala.com.thomas.customworld.commands.base.{OfflinePlayerArg, PermissionCommand}
+import scala.com.thomas.customworld.utility._
 
-            new IpDB().autoClose(y => y.getIps(x.playerid) foreach (ip => y.addBan(IpBan(ip, Some(time), r))))
+class TempBanCommand extends PermissionCommand("tempban", (sender, cmd, label, args) => {
+  args.toList match {
+    case OfflinePlayerArg(x)::TimeParser(time)::reason =>
+      val r = spaceJoin(reason)
 
-            sender.getServer.getPlayer(playername) match {
-              case player:Player => PunishMsg (player, sender, "tempbanned", r) globalBroadcast sender.getServer; player.kickPlayer (r)
-              case _ => ()
-            }
+      new IpDB().autoClose(y => y.getIps(x.playerid) foreach (ip => y.addBan(IpBan(ip, Some(time), r)))) //TODO BAN IPS OF PLAYERS RELATED TO IP
 
-            SuccessMsg
-          case _ => ErrorMsg("noplayer")
-        }) sendClient sender
+      sender.getServer.getPlayer(x.playerid UUID) match {
+        case player:Player => PunishMsg (player, sender, "tempbanned", r) globalBroadcast sender.getServer; player.kickPlayer (r)
+        case _ => ()
+      }
 
-        true
-      case _ => false
-    }
+      SomeArr(SuccessMsg)
+    case _ => None
   }
-}
+})

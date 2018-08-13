@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 
 import scala.com.thomas.customworld.commands.base
-import scala.com.thomas.customworld.util.SomeArr
+import scala.com.thomas.customworld.utility.SomeArr
 
 class SpawnCommand(cfg:FileConfiguration) extends PermissionCommand("spawn",
   base.PlayerCommand((x, cmd, name, args) => {
