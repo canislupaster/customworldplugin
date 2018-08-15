@@ -15,12 +15,12 @@ import scala.com.thomas.customworld.utility._
 class MakeBuildCommand(cfg:FileConfiguration) extends PermissionCommand("build",
   base.PlayerCommand((player, cmd, _, args) => {
     (args.toList, getSelection(player)) match {
-      case (x, _) if (spaceJoin(x) length) > base.NameLen => SomeArr(ErrorMsg("toolong"))
       case (theme::namearr, Some(x)) if (x.getWidth*x.getLength) < cfg.getInt("freeop.buildlimit") || player.hasPermission("spawnbuild") =>
         val name = spaceJoin(namearr)
         val themeid = new BuildDB().autoClose(_.getActiveThemeFromName(theme)) map (_.themeId)
         val newname:String = themeid match {case Some(_) => name; case _ => spaceJoin(theme::namearr)}
         if (newname.isEmpty) SomeArr(ErrorMsg("noname"))
+        else if (newname.length > base.NameLen) SomeArr(ErrorMsg("toolong"))
         else {
           val region = new Box(x) setY 0
           freeop.protectedRegions find (_.region.intersectXZ(region)) match {

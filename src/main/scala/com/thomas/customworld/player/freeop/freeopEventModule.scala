@@ -19,7 +19,7 @@ object freeopEventModule extends EventModule { //not caused by player events
     event match {
       case _: BlockPlaceEvent => ()
       case _: BlockBreakEvent => ()
-      case _: BlockPhysicsEvent => ()
+      case x: BlockPhysicsEvent => x
       case x: BlockFromToEvent if freeop.isProtected(x.getToBlock.getLocation()) && !freeop.isProtected(x.getBlock.getLocation()) => x.setCancelled(true)
       case x: BlockExplodeEvent => x.blockList().removeIf(x => freeop.isProtected(x.getLocation()))
       case x: BlockPistonExtendEvent if x.getBlocks.asScala exists (b => freeop.isProtected(b.getLocation())) =>
