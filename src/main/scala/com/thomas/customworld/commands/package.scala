@@ -7,7 +7,7 @@ import scala.com.thomas.customworld.commands.home.{DelHomeCommand, HomeTpCommand
 import scala.com.thomas.customworld.commands.mod.ip.{ClearIpsCommand, VerifyIpCommand}
 import scala.com.thomas.customworld.commands.mod.ban.{BanCommand, TempBanCommand, UnbanCommand}
 import scala.com.thomas.customworld.commands.mod.mute.MuteCommand
-import scala.com.thomas.customworld.commands.mod.{JumppadCommand, KickCommand, RankCommand, SmiteCommand}
+import scala.com.thomas.customworld.commands.mod._
 import scala.com.thomas.customworld.commands.util._
 import scala.com.thomas.customworld.db.{DBConstructor, PlayerDB}
 import scala.com.thomas.customworld.messaging.Message
@@ -36,6 +36,7 @@ package object commands {
     plugin.getCommand("clearips").setExecutor(new ClearIpsCommand())
 
     plugin.getCommand("smite").setExecutor(new SmiteCommand())
+    plugin.getCommand("inv").setExecutor(new InvCommand())
 
     plugin.getCommand("help").setExecutor(new commands.HelpCommand())
     plugin.getCommand("rules").setExecutor(new commands.RulesCommand())

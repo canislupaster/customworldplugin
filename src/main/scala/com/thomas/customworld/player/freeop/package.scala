@@ -80,7 +80,11 @@ package object freeop {
     }
   }
 
-  val allowedActionBlocks = Set(Material.WOOD_PLATE, Material.STONE_PLATE, Material.GOLD_PLATE, Material.IRON_PLATE, Material.WOOD_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.SPRUCE_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.STONE_BUTTON, Material.WOOD_BUTTON, Material.STONE_BUTTON, Material.LEVER)
+  val allowedActionBlocks = Set(Material.ACACIA_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE, Material.JUNGLE_PRESSURE_PLATE, Material.SPRUCE_PRESSURE_PLATE, Material.OAK_PRESSURE_PLATE, Material.STONE_PRESSURE_PLATE, Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
+    Material.OAK_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.SPRUCE_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR,
+    Material.STONE_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON, Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.OAK_BUTTON, Material.SPRUCE_BUTTON, Material.STONE_BUTTON,
+    Material.LEVER)
+
   val blockEntities = Set(EntityType.ARMOR_STAND, EntityType.ITEM_FRAME, EntityType.PAINTING)
   case class FreeOPPlayer(cfg:FileConfiguration) extends PlayerType {
     override def extraPerms: Set[String] = rank.rankCfg("freeop", cfg)

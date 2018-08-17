@@ -4,7 +4,7 @@ import java.io.File
 import java.util
 import java.util.UUID
 
-import scala.com.thomas.customworld.{EventModule, player}
+import scala.com.thomas.customworld.player
 import scala.com.thomas.customworld
 import scala.com.thomas.customworld.utility._
 import org.bukkit.{ChatColor, GameMode, Location}
@@ -32,6 +32,7 @@ import org.bukkit.event.player.{PlayerEvent, PlayerItemDamageEvent, PlayerMoveEv
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
+import scala.com.thomas.customworld.event.EventModule
 import scala.com.thomas.customworld.player.freeop
 import scala.com.thomas.customworld.player.freeop.ProtectedRegion
 import scala.reflect.ClassTag

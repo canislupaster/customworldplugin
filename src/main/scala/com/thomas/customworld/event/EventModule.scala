@@ -1,8 +1,7 @@
-package scala.com.thomas.customworld
+package scala.com.thomas.customworld.event
 
 import org.bukkit.entity.Player
-import org.bukkit.event.player.{PlayerJoinEvent, PlayerLoginEvent, PlayerQuitEvent}
-import org.bukkit.event.{Cancellable, Event}
+import org.bukkit.event.Event
 import org.bukkit.plugin.Plugin
 
 trait EventModule {

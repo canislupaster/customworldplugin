@@ -128,6 +128,30 @@ public class CustomCoreJava extends JavaPlugin implements Listener {
     public void onBlockIgnite (BlockIgniteEvent event) { CustomCore.ev(event); }
 
     @EventHandler
+    public void onBlockGrow (BlockGrowEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onLeafDecay (LeavesDecayEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onSpongeAbsorb (SpongeAbsorbEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onBlockRedstone (BlockRedstoneEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onBlockSpread (BlockSpreadEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onBlockFertilize (BlockFertilizeEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onBlockXP (BlockExpEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
+    public void onBlockSignChange (SignChangeEvent event) { CustomCore.ev(event); }
+
+    @EventHandler
     public void onExplosionPrime (ExplosionPrimeEvent event) { CustomCore.ev(event); }
 
     @EventHandler

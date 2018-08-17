@@ -6,10 +6,10 @@ import scala.com.thomas.customworld.CustomCore._
 import scala.com.thomas.customworld.db.{IpDB, MuteDB, PlayerDB}
 import scala.com.thomas.customworld.player
 import org.bukkit.entity.Player
-import scala.com.thomas.customworld.player._
 
+import scala.com.thomas.customworld.event.EventModule
+import scala.com.thomas.customworld.player._
 import scala.com.thomas.customworld.utility._
-import scala.com.thomas.customworld.EventModule
 import scala.com.thomas.customworld.player.rank
 
 object muteEventModule extends EventModule {

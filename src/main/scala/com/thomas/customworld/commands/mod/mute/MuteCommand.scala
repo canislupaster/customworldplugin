@@ -12,39 +12,27 @@ import scala.com.thomas.customworld.player.rank
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player
 
+import scala.com.thomas.customworld.commands.base.{OfflinePlayerArg, OnlinePlayerArg, PermissionCommand}
 import scala.com.thomas.customworld.player.rank.UnMuted
 import scala.com.thomas.customworld.utility._
 
-class MuteCommand (mute:Boolean) extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
-    (sender, args.toList) match {
-      case (x:Player,_) if !x.hasPermission("mute") => false
-      case (_, playername::TimeParser(time)::reason) if mute && reason.nonEmpty =>
-        (sender.getServer.getPlayer(playername) match {
-          case x:Player =>
-            val r = spaceJoin(reason)
+class MuteCommand (mute:Boolean) extends PermissionCommand("mute", (sender, _, _, args) => {
+    args.toList match {
+      case OnlinePlayerArg(x)::TimeParser(time)::reason if mute && reason.nonEmpty =>
+        val r = spaceJoin(reason)
 
-            val ips = new IpDB().autoClose(_.getIps(x.getUniqueId))
-            val cplayer = player.getPlayer(x)
-            cplayer.updateRank(rank.Muted(cplayer.rank))
-            PunishMsg (x, sender, "muted", r) globalBroadcast sender.getServer
-            if (new MuteDB ().autoClose(x => ips map (y => x.addMute(Mute(y, Some(time), r))) sum) > 0) SuccessMsg else ErrorMsg("alreadymuted")
-          case _ => ErrorMsg("noplayer")
-        }) sendClient sender
+        val ips = new IpDB().autoClose(_.getIps(x.getUniqueId))
+        val cplayer = player.getPlayer(x)
+        cplayer.updateRank(rank.Muted(cplayer.rank))
+        PunishMsg (x, sender, "muted", r) globalBroadcast sender.getServer
+        if (new MuteDB ().autoClose(x => ips map (y => x.addMute(Mute(y, Some(time), r))) sum) > 0) SomeArr(SuccessMsg) else SomeArr(ErrorMsg("alreadymuted"))
 
-        true
-      case (_, playername::_) if !mute =>
-        (new PlayerDB().autoClose(_.getPlayerFromName(playername)) match {
-          case Some (x) =>
-            val ips = new IpDB().autoClose(_.getIps(x.playerid))
-            sender.getServer.getPlayer(playername) match {case y:Player => player.getPlayer(y).updateRank(UnMuted(x.rank)); case _ => ()}
+      case OfflinePlayerArg(x)::_ if !mute =>
+        val ips = new IpDB().autoClose(_.getIps(x.playerid))
+        sender.getServer.getPlayer(x username) match {case y:Player => player.getPlayer(y).updateRank(UnMuted(x.rank)); case _ => ()}
 
-            if (new MuteDB().autoClose(x => ips map (y => x.removeMute(y)) sum) > 0) SuccessMsg else ErrorMsg("alreadymuted")
-          case _ => ErrorMsg("noplayer")
-        }) sendClient sender
+        if (new MuteDB().autoClose(x => ips map (y => x.removeMute(y)) sum) > 0) SomeArr(SuccessMsg) else SomeArr(ErrorMsg("alreadymuted"))
 
-        true
-      case _ => false
+      case _ => None
     }
-  }
-}
+  })

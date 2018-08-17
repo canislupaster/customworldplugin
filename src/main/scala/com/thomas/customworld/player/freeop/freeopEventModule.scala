@@ -9,8 +9,8 @@ import org.bukkit.plugin.Plugin
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.com.thomas.customworld.EventModule
 import scala.com.thomas.customworld.db.BuildDB
+import scala.com.thomas.customworld.event.EventModule
 import scala.com.thomas.customworld.player.freeop
 import scala.com.thomas.customworld.utility.Box
 
@@ -19,7 +19,8 @@ object freeopEventModule extends EventModule { //not caused by player events
     event match {
       case _: BlockPlaceEvent => ()
       case _: BlockBreakEvent => ()
-      case x: BlockPhysicsEvent => x
+      case _: BlockPhysicsEvent => ()
+      case _: SignChangeEvent => ()
       case x: BlockFromToEvent if freeop.isProtected(x.getToBlock.getLocation()) && !freeop.isProtected(x.getBlock.getLocation()) => x.setCancelled(true)
       case x: BlockExplodeEvent => x.blockList().removeIf(x => freeop.isProtected(x.getLocation()))
       case x: BlockPistonExtendEvent if x.getBlocks.asScala exists (b => freeop.isProtected(b.getLocation())) =>

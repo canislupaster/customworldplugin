@@ -22,6 +22,7 @@ import scala.collection.JavaConverters._
 import scala.com.thomas.customworld.utility._
 import org.bukkit.event.{Cancellable, Event, player}
 
+import scala.com.thomas.customworld.event.EventModule
 import scala.com.thomas.customworld.minigame.minigameEventModule
 import scala.com.thomas.customworld.player.freeop.freeopEventModule
 import scala.com.thomas.customworld.player.mute.muteEventModule

@@ -6,7 +6,7 @@ import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.{Cancellable, Event}
 
 import scala.com.thomas.customworld.CustomCore.GetTag
-import scala.com.thomas.customworld.EventModule
+import scala.com.thomas.customworld.event.EventModule
 import scala.com.thomas.customworld.messaging.PlayerJoinMessage
 import scala.com.thomas.customworld.utility.toUUID
 

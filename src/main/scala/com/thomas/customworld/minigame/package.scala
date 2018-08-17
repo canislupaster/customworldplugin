@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
 import scala.collection.mutable.ArrayBuffer
+import scala.com.thomas.customworld.event.EventModule
 
 package object minigame {
   type Inventory = Array[ItemStack]
@@ -61,7 +62,7 @@ package object minigame {
     override def playerEv(event: Event, player: Player): Unit = {
       event match {
         case event: PlayerInteractEvent =>
-          if (event.hasBlock && event.getClickedBlock.getType == Material.SIGN_POST) {
+          if (event.hasBlock && event.getClickedBlock.getType == Material.SIGN) {
               event.getClickedBlock.getState match {
               case x:Sign => signinteract(player, x)
               case _ => ()

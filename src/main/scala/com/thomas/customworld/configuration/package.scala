@@ -138,7 +138,7 @@ package object configuration {
     JavaConverters.mapAsJavaMap (map)
   }
 
-  val BlockedBlocks = List(Material.COMMAND, Material.COMMAND_CHAIN, Material.COMMAND_MINECART, Material.COMMAND_REPEATING, Material.COMMAND_CHAIN, Material.STRUCTURE_BLOCK)
+  val BlockedBlocks = List(Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART, Material.REPEATING_COMMAND_BLOCK, Material.STRUCTURE_BLOCK)
   val BlockedEntities = List(EntityType.MINECART_COMMAND, EntityType.MINECART_TNT)
 
   val cfg: FileConfiguration = CustomCore.cfg

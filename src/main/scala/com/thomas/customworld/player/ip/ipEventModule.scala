@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.{Cancellable, Event}
 import org.bukkit.event.player.{AsyncPlayerChatEvent, PlayerEvent, PlayerLoginEvent}
 
-import scala.com.thomas.customworld.EventModule
+import scala.com.thomas.customworld.event.EventModule
 
 object ipEventModule extends EventModule {
   override def join (player: Player): Unit = {

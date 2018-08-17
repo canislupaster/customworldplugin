@@ -52,7 +52,7 @@ class SpleefMinigame (plugin: Plugin, region:Box, spawnLoc: Location, signLoc: L
   }
 
   override def blockBreak(event: BlockBreakEvent): Unit = {
-    if (event.getBlock.getType == Material.WOOL)
+    if (event.getBlock.getType == Material.WHITE_WOOL)
       event.setDropItems(false) else event.setCancelled(true)
   }
 }

@@ -17,6 +17,7 @@ import github.scarsz.discordsrv.api.events
 import scala.com.thomas.customworld.{CustomCore, EventModule}
 import scala.com.thomas.customworld.commands.base.OfflinePlayerArg
 import scala.com.thomas.customworld.db.BuildDB
+import scala.com.thomas.customworld.event.EventModule
 import scala.com.thomas.customworld.messaging._
 import scala.com.thomas.customworld.utility.{SomeArr, spaceJoin}
 

@@ -20,7 +20,7 @@ import scala.com.thomas.customworld.utility._
 import org.bukkit.event.{Cancellable, Event}
 
 import scala.collection.mutable
-import scala.com.thomas.customworld.EventModule
+import scala.com.thomas.customworld.event.EventModule
 
 package object player {
   case class CustomPlayer(playerid:UUID, username:String, rank:Rank, nickname:Option[String])
@@ -65,7 +65,7 @@ package object player {
       player.setGameMode(GameMode.CREATIVE)
       player.setCollidable(false)
       player.setHealth(20)
-      player.setFlySpeed(0.2f)
+      player.setFlySpeed(0.1f)
       player.setWalkSpeed(0.2f)
     }
 

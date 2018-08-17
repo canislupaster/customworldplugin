@@ -3,8 +3,9 @@ version: 0.2
 main: com.thomas.customworld.CustomCoreJava
 description: CustomWorld's main plugin.
 authors: [Thomas Marlowe]
+api-version: 1.13
 website: https://github.com/Thomas-QM/customworldplugin
-depend: [FastAsyncWorldEdit, WorldEdit, DiscordSRV]
+depend: [FastAsyncWorldEdit, DiscordSRV]
 softdepend: []
 loadbefore: []
 permissions:
@@ -64,6 +65,8 @@ permissions:
     description: Set others' gamemodes.
   clear:
     description: Clear own inventory
+  inv:
+    description: See others' inventories
 
 commands:
   rank:
@@ -197,3 +200,6 @@ commands:
   clear:
     description: Clear inventory
     usage: /clear
+  inv:
+    description: Open an inventory
+    usage: /inv player
