@@ -106,11 +106,11 @@ commands:
     aliases: []
     usage: /verify [player]
   clearips:
-    description: Clears all ips from a player.
+    description: Clears all IPs from a player.
     aliases: []
     usage: /clearips [player]
   nick:
-    description: Sets your display name
+    description: Sets your nick (Display name)
     aliases: []
     usage: /nick [name]
   smite:
@@ -122,15 +122,15 @@ commands:
     aliases: /bukkit:help, /?, /bukkit:?, /minecraft:help, /minecraft:?
     usage: /help
   rules:
-    description: Shows you server rules
+    description: Shows you the server rules
     aliases: []
     usage: /rules
   tempban:
-    description: Temporary ip ban
+    description: Temporary IP ban
     aliases: []
     usage: /tempban [player] [length] [reason]
   ban:
-    description: Permanent ip ban
+    description: Permanent IP ban
     aliases: []
     usage: /ban [player] [reason]
   unban:
@@ -186,16 +186,16 @@ commands:
     aliases: []
     usage: /speed [fly|walk] amount
   gms:
-    description: Change to survival
+    description: Change to survival mode
     usage: /gms
   gma:
-    description: Change to adventure
+    description: Change to adventure mode
     usage: /gma
   gmc:
-    description: Change to creative
+    description: Change to creative mode
     usage: /gmc
   gmsp:
-    description: Change to spectator
+    description: Change to spectator mode
     usage: /gmsp
   clear:
     description: Clear inventory
